@@ -1,0 +1,8 @@
+{{range .Shares}}
+{{- if eq .Protocol "nfs"}}
+# Share: {{.Name}}
+{{- range .NFSClients}}
+{{$.Path}}/{{$.Name}}    {{.Host}}({{.Options}})
+{{- end}}
+{{end}}
+{{end}}

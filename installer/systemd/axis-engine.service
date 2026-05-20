@@ -1,0 +1,25 @@
+[Unit]
+Description=KuraOS Axis AI Engine
+After=network.target postgresql.service kura-daemon.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=kura
+Group=kura
+WorkingDirectory=/opt/kura
+ExecStart=/opt/kura/.venv/bin/uvicorn axis.core.main:app --host 127.0.0.1 --port 8765 --workers 1
+Restart=on-failure
+RestartSec=10
+EnvironmentFile=-/etc/kura/axis.env
+
+# Security
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/kura /var/log/kura /tmp
+ProtectHome=yes
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target

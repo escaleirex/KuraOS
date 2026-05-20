@@ -1,0 +1,37 @@
+---
+description: Storage module rules for Go code
+globs: ["backend/internal/storage/**/*.go", "backend/internal/helper/ops/storage.go"]
+alwaysApply: false
+---
+
+# Storage Module Rules
+
+## Device validation — always first
+```go
+if err := kexec.MustBeBlockDevice(device); err != nil {
+    return nil, err
+}
+```
+
+## Command pattern
+```go
+// CORRECT
+res, err := kexec.Run(ctx, 30*time.Second, "mdadm", "--detail", device)
+
+// WRONG — never do this
+cmd := exec.Command("sh", "-c", "mdadm --detail "+device)
+```
+
+## Btrfs snapshots
+- Always use `btrfs subvolume snapshot -r` (read-only) for backups
+- Store snapshots under `<mount>/<subvol>/.snapshots/`
+- Call `EnsureSnapshotDir()` before creating snapshots
+
+## LVM SSD cache
+- Cache pool on NVMe/fast device: `lvcreate --type cache-pool`
+- Use `--cachepolicy smq` (Stochastic Multi-Queue)
+- Cache must be on different PV than data LV
+
+## mdadm
+- Always pass `--run` to `mdadm --create` to avoid interactive prompt
+- Scrub with `echo check > /sys/block/md0/md/sync_action`

@@ -1,0 +1,20 @@
+[build]
+  cmd = "CGO_ENABLED=1 go build -o .air-bin/kura-daemon ./backend/cmd/kura-daemon"
+  bin = ".air-bin/kura-daemon"
+  full_bin = ".air-bin/kura-daemon"
+  include_ext = ["go"]
+  include_dir = ["backend"]
+  exclude_dir = ["dist", ".air-bin", "frontend", "axis", "vendor"]
+  delay = 500
+
+[log]
+  time = false
+
+[color]
+  main     = "magenta"
+  watcher  = "cyan"
+  build    = "yellow"
+  runner   = "green"
+
+[misc]
+  clean_on_exit = true

@@ -1,0 +1,44 @@
+---
+description: KuraOS project rules and architecture context
+globs: ["**/*.go", "**/*.py", "**/*.ts", "**/*.tsx"]
+alwaysApply: true
+---
+
+# KuraOS Project Rules
+
+## Architecture
+- **kura-daemon** (Go :8080): main REST API. Router at `backend/internal/api/routes.go`
+- **kura-helper** (Go, root): privileged ops. Socket `/run/kura/helper.sock`. IPC at `backend/internal/helper/`
+- **axis-engine** (Python :8765): FastAPI AI engine. Entry at `axis/core/main.py`
+- **frontend** (React/TS/shadcn): Vite dev at :5173. Entry at `frontend/src/App.tsx`
+
+## Go rules
+- Module: `github.com/kura-os/kura`
+- NEVER `exec.Command("sh", "-c", ...)` — always `exec.Command(binary, args...)`
+- All device paths validated with `kexec.MustBeBlockDevice()` before use
+- Privileged ops whitelist in `backend/internal/helper/ops/` — add new ops deliberately
+- CGO enabled: `CGO_ENABLED=1` for build (sqlite3 dep)
+
+## Python / Axis rules
+- Python 3.12, managed with `uv`
+- Config: `axis/core/config.py` (pydantic-settings, env file `/etc/kura/axis.env`)
+- Cloud fallback order: groq → openai → anthropic → openrouter
+- MCP tools in `axis/mcp/tools.py` — always call kura-daemon, never kura-helper
+
+## Frontend rules
+- React 19 + TypeScript + shadcn/ui (Tailwind v4)
+- Add components: `npx shadcn@latest add <component>`
+- API client: `frontend/src/api/client.ts` — auto JWT injection, 401 redirect
+- TanStack Query for all server state
+- No prop drilling — prefer query hooks + context
+
+## Samba — CRITICAL
+- Default: `store dos attributes = no` + `ea support = no`
+- Prevents DOSATTRIB xattrs breaking POSIX permissions
+- See `backend/internal/storage/shares.go`
+
+## Security invariants
+1. kura-helper only reachable from kura-daemon via Unix socket (0600 perms)
+2. All ops whitelisted — unknown actions rejected with error
+3. No shell interpolation anywhere
+4. Axis MCP: daemon API → helper (never Axis → helper directly)

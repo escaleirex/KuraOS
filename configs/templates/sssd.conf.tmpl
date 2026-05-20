@@ -1,0 +1,34 @@
+[sssd]
+services = nss, pam
+config_file_version = 2
+domains = {{.Domain}}
+
+[domain/{{.Domain}}]
+id_provider = ad
+auth_provider = ad
+access_provider = ad
+
+ad_domain = {{.ADDomain}}
+ad_server = {{.ADServer}}
+krb5_realm = {{.KerberosRealm}}
+
+# Use fully qualified names (user@domain) — set to False if preferred
+use_fully_qualified_names = False
+
+# Map AD groups to Unix GIDs deterministically
+ldap_id_mapping = True
+
+# Offline caching
+cache_credentials = True
+krb5_store_password_if_offline = True
+
+# Performance
+enumerate = False
+ldap_referrals = False
+
+# TLS
+ldap_tls_reqcert = demand
+ldap_tls_cacert = /etc/ssl/certs/ca-certificates.crt
+
+# Access control — restrict to specific AD groups (optional)
+# ad_access_filter = memberOf=CN=KuraNAS-Users,OU=Groups,DC={{.DCParts}}

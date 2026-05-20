@@ -1,0 +1,32 @@
+[Unit]
+Description=KuraOS Main Daemon
+After=network.target kura-helper.service postgresql.service
+Requires=kura-helper.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=kura
+Group=kura
+ExecStart=/usr/local/bin/kura-daemon
+Restart=on-failure
+RestartSec=5
+
+# Environment
+Environment=KURA_ADDR=:8080
+EnvironmentFile=-/etc/kura/daemon.env
+
+# Security hardening
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/kura /var/log/kura /run/kura /etc/samba /etc/exports.d /etc/kura
+ProtectHome=yes
+CapabilityBoundingSet=
+
+# Socket for communication with helper
+RuntimeDirectory=kura
+RuntimeDirectoryMode=0750
+
+[Install]
+WantedBy=multi-user.target

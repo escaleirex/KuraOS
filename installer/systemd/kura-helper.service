@@ -1,0 +1,31 @@
+[Unit]
+Description=KuraOS Privileged Helper
+After=local-fs.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/local/bin/kura-helper
+Restart=on-failure
+RestartSec=3
+
+# Restrict to only the capabilities actually needed
+CapabilityBoundingSet=CAP_SYS_ADMIN CAP_NET_ADMIN CAP_SYS_RAWIO CAP_DAC_READ_SEARCH CAP_CHOWN CAP_FOWNER
+AmbientCapabilities=CAP_SYS_ADMIN CAP_NET_ADMIN CAP_SYS_RAWIO CAP_DAC_READ_SEARCH CAP_CHOWN CAP_FOWNER
+
+# Prevent privilege escalation beyond declared caps
+NoNewPrivileges=no
+
+# Runtime socket directory
+RuntimeDirectory=kura
+RuntimeDirectoryMode=0750
+RuntimeDirectoryPreserve=yes
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=kura-helper
+
+[Install]
+WantedBy=multi-user.target

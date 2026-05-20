@@ -1,0 +1,34 @@
+[global]
+   workgroup = WORKGROUP
+   server string = KuraOS NAS
+   netbios name = {{.Hostname}}
+   security = user
+   map to guest = Bad User
+
+   # Logging
+   log file = /var/log/samba/log.%m
+   max log size = 1000
+   logging = file
+
+   # Performance
+   socket options = TCP_NODELAY IPTOS_LOWDELAY
+   read raw = yes
+   write raw = yes
+   oplocks = yes
+   max xmit = 65535
+   dead time = 15
+   getwd cache = yes
+
+   # DNS proxy
+   dns proxy = no
+
+   # Fruit (macOS compatibility, optional)
+   vfs objects = fruit streams_xattr
+   fruit:metadata = stream
+   fruit:model = MacSamba
+   fruit:posix_rename = yes
+   fruit:veto_appledouble = no
+   fruit:wipe_intentionally_left_blank_rfork = yes
+   fruit:delete_empty_adfiles = yes
+
+include = /etc/samba/kura-shares.conf

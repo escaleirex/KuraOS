@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: kura
+      POSTGRES_USER: kura
+      POSTGRES_PASSWORD: kura_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev:/var/lib/postgresql/data
+
+  nats:
+    image: nats:2.10-alpine
+    ports:
+      - "4222:4222"
+      - "8222:8222"  # monitoring
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_dev:/root/.ollama
+    # Uncomment for NVIDIA GPU:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+volumes:
+  postgres_dev:
+  ollama_dev:
