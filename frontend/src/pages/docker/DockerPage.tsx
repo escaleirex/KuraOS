@@ -324,8 +324,14 @@ services:
 
       {/* COMPOSE STACK DEPLOY MODAL */}
       {showComposeModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <form onSubmit={handleDeployStack} className="bg-slate-900 border border-white/10 rounded-xl p-5 w-full max-w-xl flex flex-col h-[500px]">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
+          <form onSubmit={handleDeployStack} className="rounded-xl p-5 w-full max-w-xl flex flex-col h-[500px]"
+            style={{
+              background: 'rgba(12,14,22,0.82)',
+              backdropFilter: 'blur(32px) saturate(1.5)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
+            }}>
             <h3 className="font-bold text-lg text-white mb-2 shrink-0">Nova Stack Docker Compose</h3>
 
             <div className="flex-1 flex flex-col min-h-0 space-y-1.5 mb-4">

@@ -72,15 +72,16 @@ export function AppDetail({ app, onClose, onInstalled }: Props) {
   return (
     <div
       className="fixed inset-0 flex items-center justify-center"
-      style={{ zIndex: 20000, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+      style={{ zIndex: 20000, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(12px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
       <div
         className="w-[560px] max-h-[80vh] overflow-y-auto rounded-2xl flex flex-col"
         style={{
-          background: 'rgba(18,20,30,0.97)',
-          border: '1px solid rgba(255,255,255,0.10)',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.7)',
+          background: 'rgba(12,14,22,0.82)',
+          backdropFilter: 'blur(32px) saturate(1.5)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 24px 64px rgba(0,0,0,0.7), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
         }}
       >
         {/* Header */}

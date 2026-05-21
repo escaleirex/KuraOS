@@ -355,8 +355,14 @@ export function NetworkPage() {
 
       {/* FIREWALL ADD MODAL */}
       {showFirewallModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <form onSubmit={handleAddRule} className="bg-slate-900 border border-white/10 rounded-xl p-5 w-full max-w-sm space-y-4 animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
+          <form onSubmit={handleAddRule} className="rounded-xl p-5 w-full max-w-sm space-y-4 animate-in fade-in zoom-in duration-200"
+            style={{
+              background: 'rgba(12,14,22,0.82)',
+              backdropFilter: 'blur(32px) saturate(1.5)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
+            }}>
             <h3 className="font-bold text-lg text-white">Criar Nova Regra de Acesso</h3>
 
             <div className="grid grid-cols-2 gap-4">
@@ -428,8 +434,14 @@ export function NetworkPage() {
 
       {/* PROXY ADD MODAL */}
       {showProxyModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <form onSubmit={handleAddProxy} className="bg-slate-900 border border-white/10 rounded-xl p-5 w-full max-w-sm space-y-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
+          <form onSubmit={handleAddProxy} className="rounded-xl p-5 w-full max-w-sm space-y-4"
+            style={{
+              background: 'rgba(12,14,22,0.82)',
+              backdropFilter: 'blur(32px) saturate(1.5)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
+            }}>
             <h3 className="font-bold text-lg text-white">Configurar Novo Proxy Host</h3>
 
             <div className="space-y-1">

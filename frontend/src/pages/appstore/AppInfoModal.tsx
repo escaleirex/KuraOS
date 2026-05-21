@@ -68,9 +68,10 @@ export function AppInfoModal({ app, hubRef, onClose, onInstalled }: Props) {
           width: 680,
           maxHeight: '88vh',
           borderRadius: 20,
-          background: 'rgba(13,15,24,0.98)',
-          border: '1px solid rgba(255,255,255,0.09)',
-          boxShadow: '0 32px 80px rgba(0,0,0,0.8)',
+          background: 'rgba(12,14,22,0.82)',
+          backdropFilter: 'blur(32px) saturate(1.5)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
         }}
         initial={{ scale: 0.94, y: 12 }}
         animate={{ scale: 1, y: 0 }}
