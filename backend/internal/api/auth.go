@@ -26,7 +26,7 @@ func (h *authHandler) login(w http.ResponseWriter, r *http.Request) {
 
 	ok, totpRequired, err := auth.VerifyPassword(req.Username, req.Password)
 	if err != nil || !ok {
-		jsonError(w, "invalid credentials", http.StatusUnauthorized)
+		jsonError(w, "invalid credentials", http.StatusBadRequest)
 		return
 	}
 
@@ -59,7 +59,7 @@ func (h *authHandler) totpVerify(w http.ResponseWriter, r *http.Request) {
 
 	ok, err := auth.VerifyTOTP(req.Username, req.Code)
 	if err != nil || !ok {
-		jsonError(w, "invalid TOTP code", http.StatusUnauthorized)
+		jsonError(w, "invalid TOTP code", http.StatusBadRequest)
 		return
 	}
 

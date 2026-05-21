@@ -7,12 +7,8 @@ import { useIconStore, type DesktopIcon } from '@/stores/iconStore'
 import { useDockStore } from '@/stores/dockStore'
 import { APP_COLORS } from '@/shared/appColors'
 
-export const CELL_W = 88
-export const CELL_H = 96
-export const PAD_T  = 56
-export const PAD_R  = 48
-export const PAD_L  = 48
-export const PAD_B  = 48
+export { CELL_W, CELL_H, PAD_T, PAD_R, PAD_L, PAD_B, gridLayout, gridToPixel } from '@/shared/gridConstants'
+import { CELL_W, CELL_H, gridLayout, gridToPixel } from '@/shared/gridConstants'
 
 const DRAG_THRESHOLD = 4
 
@@ -20,38 +16,13 @@ const DESKTOP_BG: Record<AppID, string> = Object.fromEntries(
   Object.entries(APP_COLORS).map(([k, v]) => [k, v.bg])
 ) as Record<AppID, string>
 
-export function gridLayout() {
-  const gridW = window.innerWidth - PAD_L - PAD_R
-  const gridH = window.innerHeight - PAD_T - PAD_B
-  const cols = Math.max(1, Math.floor(gridW / CELL_W))
-  const rows = Math.max(1, Math.floor(gridH / CELL_H))
-  const totalW = cols * CELL_W
-  const totalH = rows * CELL_H
-  const slackX = gridW - totalW
-  const slackY = gridH - totalH
-  return {
-    cols,
-    rows,
-    originX: window.innerWidth - PAD_R - Math.round(slackX / 2),
-    originY: PAD_T + Math.round(slackY / 2),
-  }
-}
-
-export function gridToPixel(col: number, row: number) {
-  const { originX, originY } = gridLayout()
-  return {
-    x: originX - (col + 1) * CELL_W,
-    y: originY + row * CELL_H,
-  }
-}
-
 function pixelToGrid(px: number, py: number) {
   const { originX, originY, cols, rows } = gridLayout()
   const col = Math.round((originX - px) / CELL_W) - 1
   const row = Math.round((py - originY) / CELL_H)
   return {
-    col: Math.min(cols - 1, Math.max(0, col)),
-    row: Math.min(rows - 1, Math.max(0, row)),
+    col: Math.max(0, Math.min(cols - 1, col)),
+    row: Math.max(0, Math.min(rows - 1, row)),
   }
 }
 

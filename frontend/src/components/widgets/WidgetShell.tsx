@@ -1,10 +1,22 @@
-import { useState } from 'react'
+import { createPortal } from 'react-dom'
+import { useEffect, useRef, useState } from 'react'
 import { Rnd } from 'react-rnd'
-import { motion } from 'framer-motion'
-import { useWidgetStore, WIDGET_DEFAULT_SIZE } from '@/stores/widgetStore'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useWidgetStore, WIDGET_DEFAULT_SIZE, type WidgetInstance } from '@/stores/widgetStore'
 import { useIconStore } from '@/stores/iconStore'
-import { CELL_W, CELL_H, PAD_T, PAD_L } from '@/components/DesktopIcons'
+import { CELL_W, CELL_H, CELL_GAP, gridLayout } from '@/shared/gridConstants'
 import { iconRect, widgetRect, findFreePos, snapToGridPixel } from '@/shared/gridCollision'
+import { X, Gear } from '@phosphor-icons/react'
+
+interface Pos { x: number; y: number }
+
+const MENU_STYLE: React.CSSProperties = {
+  minWidth:       '160px',
+  background:     'rgba(18,20,30,0.96)',
+  backdropFilter: 'blur(24px)',
+  border:         '1px solid rgba(255,255,255,0.10)',
+  boxShadow:      '0 16px 48px rgba(0,0,0,0.7)',
+}
 
 interface Props {
   id: string
@@ -32,15 +44,27 @@ function buildObstacles(
 }
 
 export function WidgetShell({ id, children }: Props) {
-  const { widgets, moveWidget, resizeWidget, removeWidget } = useWidgetStore()
+  const { widgets, moveWidget, resizeWidget, removeWidget, openSettings } = useWidgetStore()
   const { icons } = useIconStore()
   const [hovered, setHovered] = useState(false)
   const [preview, setPreview] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
+  const [menuPos, setMenuPos] = useState<Pos | null>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
 
-  const w = widgets.find(x => x.id === id)
+  useEffect(() => {
+    function onDown(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuPos(null)
+      }
+    }
+    window.addEventListener('mousedown', onDown)
+    return () => window.removeEventListener('mousedown', onDown)
+  }, [])
+
+  const w = widgets.find((x: WidgetInstance) => x.id === id)
   if (!w) return null
 
-  const otherWidgets = widgets.filter(x => x.id !== id)
+  const otherWidgets = widgets.filter((x: WidgetInstance) => x.id !== id)
 
   function onDrop(_e: any, d: { x: number; y: number }) {
     setPreview(null)
@@ -69,17 +93,29 @@ export function WidgetShell({ id, children }: Props) {
     setPreview({ x: snapped.x, y: snapped.y, w: ref.offsetWidth, h: ref.offsetHeight })
   }
 
+  function handleContextMenu(e: React.MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    const mW = 160, mH = 48
+    setMenuPos({
+      x: Math.min(e.clientX, window.innerWidth - mW - 8),
+      y: Math.min(e.clientY, window.innerHeight - mH - 8),
+    })
+  }
+
   const previewCells: { x: number; y: number }[] = []
   if (preview) {
-    const colStart = Math.round((preview.x - PAD_L) / CELL_W)
-    const rowStart = Math.round((preview.y - PAD_T) / CELL_H)
+    const { originX, originY, cols: gridCols } = gridLayout()
+    const gridLeft = originX - gridCols * CELL_W
+    const colStart = Math.round((preview.x - gridLeft) / CELL_W)
+    const rowStart = Math.round((preview.y - originY) / CELL_H)
     const cols = Math.max(1, Math.round(preview.w / CELL_W))
     const rows = Math.max(1, Math.round(preview.h / CELL_H))
     for (let c = 0; c < cols; c++) {
       for (let r = 0; r < rows; r++) {
         previewCells.push({
-          x: PAD_L + (colStart + c) * CELL_W,
-          y: PAD_T + (rowStart + r) * CELL_H,
+          x: gridLeft + (colStart + c) * CELL_W,
+          y: originY + (rowStart + r) * CELL_H,
         })
       }
     }
@@ -115,33 +151,77 @@ export function WidgetShell({ id, children }: Props) {
         onDragStop={onDrop}
         onResize={onResizing}
         onResizeStop={onResizeStop}
+        onContextMenu={handleContextMenu}
+        data-no-ctx
         style={{ zIndex: 2, pointerEvents: 'auto' }}
       >
+        {/* close button at cell boundary (outside the gap inset) */}
+        <motion.button
+          initial={{ opacity: 0, scale: 0.7 }}
+          animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.7 }}
+          transition={{ duration: 0.15 }}
+          onClick={() => removeWidget(id)}
+          className="absolute z-10 w-5 h-5 rounded-full flex items-center justify-center
+                     text-[10px] text-white cursor-pointer"
+          style={{
+            top: CELL_GAP / 2 - 8,
+            right: CELL_GAP / 2 - 8,
+            background: '#ff5f57',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
+          }}
+        >
+          ×
+        </motion.button>
+
+        {/* inset wrapper — creates consistent gap matching icon cell spacing */}
         <motion.div
-          className="relative w-full h-full p-1.5"
+          className="absolute"
+          style={{ inset: CELL_GAP / 2 }}
           onHoverStart={() => setHovered(true)}
           onHoverEnd={() => setHovered(false)}
         >
-          <motion.button
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.7 }}
-            transition={{ duration: 0.15 }}
-            onClick={() => removeWidget(id)}
-            className="absolute -top-2 -right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center
-                       text-[10px] text-white cursor-pointer"
-            style={{ background: '#ff5f57', boxShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
-          >
-            ×
-          </motion.button>
-
           <div
             className="widget-handle absolute top-0 left-0 right-0 h-5 rounded-t-2xl cursor-grab active:cursor-grabbing z-10"
             style={{ background: 'transparent' }}
           />
 
-          {children}
+          <div className="relative w-full h-full p-1.5">
+            {children}
+          </div>
         </motion.div>
       </Rnd>
+
+      {menuPos && typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          <motion.div
+            ref={menuRef}
+            data-no-ctx
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.92 }}
+            transition={{ duration: 0.12 }}
+            className="fixed py-1.5 rounded-xl select-none"
+            style={{ left: menuPos.x, top: menuPos.y, zIndex: 9600, ...MENU_STYLE }}
+          >
+            <button
+              onClick={() => { openSettings(id); setMenuPos(null) }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-white/80
+                         hover:bg-white/[0.07] transition-colors cursor-pointer"
+            >
+              <Gear size={14} /> Settings
+            </button>
+            <div className="h-px bg-white/[0.06] mx-2 my-1" />
+            <button
+              onClick={() => { removeWidget(id); setMenuPos(null) }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-400
+                         hover:bg-white/[0.07] transition-colors cursor-pointer"
+            >
+              <X size={14} /> Remove Widget
+            </button>
+          </motion.div>
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   )
 }

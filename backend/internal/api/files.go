@@ -1,8 +1,10 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 	"os"
+	"os/user"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -21,6 +23,22 @@ type fileEntry struct {
 }
 
 type filesHandler struct{}
+
+func (h *filesHandler) homeDir(w http.ResponseWriter, r *http.Request) {
+	u, err := user.Current()
+	if err != nil {
+		jsonError(w, "cannot determine current user", http.StatusInternalServerError)
+		return
+	}
+	home := u.HomeDir
+	if os.Getenv("KURA_DEV_MODE") == "1" && u.Username == "admin" {
+		home = "/home/escaleirex"
+	}
+	jsonOK(w, map[string]any{
+		"username": u.Username,
+		"home":     home,
+	})
+}
 
 func (h *filesHandler) listDir(w http.ResponseWriter, r *http.Request) {
 	rawPath := r.URL.Query().Get("path")
@@ -112,6 +130,7 @@ func (h *filesHandler) downloadFile(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, "missing path parameter", http.StatusBadRequest)
 		return
 	}
+	inline := r.URL.Query().Get("inline") == "1"
 
 	clean := filepath.Clean(rawPath)
 
@@ -139,8 +158,58 @@ func (h *filesHandler) downloadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Disposition", "attachment; filename="+filepath.Base(clean))
+	if !inline {
+		w.Header().Set("Content-Disposition", "attachment; filename="+filepath.Base(clean))
+	}
 	w.Header().Set("Content-Type", "application/octet-stream")
 	http.ServeFile(w, r, clean)
+}
+
+func (h *filesHandler) createFile(w http.ResponseWriter, r *http.Request) {
+	var body struct {
+		Path string `json:"path"`
+		Name string `json:"name"`
+		Dir  bool   `json:"dir"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		jsonError(w, "invalid request", http.StatusBadRequest)
+		return
+	}
+	if body.Path == "" || body.Name == "" {
+		jsonError(w, "path and name are required", http.StatusBadRequest)
+		return
+	}
+
+	clean := filepath.Clean(filepath.Join(body.Path, body.Name))
+
+	allowed := false
+	for _, root := range allowedRoots {
+		if clean == root || strings.HasPrefix(clean, root+"/") {
+			allowed = true
+			break
+		}
+	}
+	if !allowed {
+		jsonError(w, "path not allowed", http.StatusForbidden)
+		return
+	}
+
+	if _, err := os.Stat(clean); err == nil {
+		jsonError(w, "already exists", http.StatusConflict)
+		return
+	}
+
+	var err error
+	if body.Dir {
+		err = os.MkdirAll(clean, 0755)
+	} else {
+		err = os.WriteFile(clean, []byte{}, 0644)
+	}
+	if err != nil {
+		jsonError(w, "cannot create", http.StatusInternalServerError)
+		return
+	}
+
+	jsonOK(w, map[string]any{"path": clean})
 }
 

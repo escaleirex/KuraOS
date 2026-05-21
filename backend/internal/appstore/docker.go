@@ -129,9 +129,11 @@ func (m *Manager) Uninstall(ctx context.Context, appID string) error {
 	}
 
 	composePath := filepath.Join(app.ComposeDir, "docker-compose.yml")
-	_, err := kexec.Run(ctx, 2*time.Minute, "docker", "compose", "-f", composePath, "down", "--remove-orphans")
-	if err != nil {
-		return fmt.Errorf("docker compose down: %w", err)
+	if _, err := os.Stat(composePath); err == nil {
+		_, err := kexec.Run(ctx, 2*time.Minute, "docker", "compose", "-f", composePath, "down", "--remove-orphans")
+		if err != nil {
+			return fmt.Errorf("docker compose down: %w", err)
+		}
 	}
 
 	m.mu.Lock()

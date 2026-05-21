@@ -61,8 +61,10 @@ func NewRouter(store *config.Store) http.Handler {
 		r.Delete("/api/storage/shares/{name}", sh.deleteShare)
 
 		// Files
+		r.Get("/api/files/home", fh.homeDir)
 		r.Get("/api/files/list", fh.listDir)
 		r.Get("/api/files/download", fh.downloadFile)
+		r.Post("/api/files/create", fh.createFile)
 
 		// System metrics
 		r.Get("/api/system/metrics", systemMetrics)
@@ -90,9 +92,15 @@ func NewRouter(store *config.Store) http.Handler {
 		r.Post("/api/apps/{id}/update", aph.update)
 		r.Get("/api/apps/{id}/logs", aph.logs)
 
+		// Code Server — auto-setup
+		r.Post("/api/code-server/setup", aph.codeServerSetup)
+		r.Get("/api/code-server/status", aph.codeServerStatus)
+
 		// Settings
 		r.Get("/api/settings/dock", seh.getDock)
 		r.Put("/api/settings/dock", seh.saveDock)
+		r.Get("/api/settings/nav-order", seh.getNavOrder)
+		r.Put("/api/settings/nav-order", seh.saveNavOrder)
 	})
 
 	// Serve SvelteKit frontend (production)

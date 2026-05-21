@@ -11,12 +11,15 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+let _redirecting = false
+
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    if (err.response?.status === 401 && !_redirecting && !window.location.pathname.startsWith('/login')) {
+      _redirecting = true
       localStorage.removeItem('kura_token')
-      window.location.href = '/login'
+      window.location.replace('/login')
     }
     return Promise.reject(err)
   }
@@ -55,7 +58,9 @@ export interface SystemResources {
 
 // Files
 export const filesApi = {
+  home: () => api.get<{ username: string; home: string }>('/files/home'),
   list: (path?: string) => api.get('/files/list', { params: { path } }),
+  create: (path: string, name: string, dir = false) => api.post('/files/create', { path, name, dir }),
 }
 
 
@@ -71,6 +76,8 @@ export const authApi = {
 export const settingsApi = {
   getDock: () => api.get<{ pinned: string[] }>('/settings/dock'),
   saveDock: (pinned: string[]) => api.put('/settings/dock', { pinned }),
+  getNavOrder: () => api.get<{ order: string[] }>('/settings/nav-order'),
+  saveNavOrder: (order: string[]) => api.put('/settings/nav-order', { order }),
 }
 
 // App Store
@@ -100,4 +107,10 @@ export const axisApi = {
   chat: (messages: object[], options?: object) =>
     axios.post('http://localhost:9765/axis/chat', { messages, ...options }),
   listTools: () => axios.get('http://localhost:9765/axis/mcp/tools'),
+}
+
+// Code Server
+export const codeServerApi = {
+  setup: () => api.post('/code-server/setup'),
+  status: () => api.get('/code-server/status'),
 }

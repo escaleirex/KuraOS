@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -238,4 +239,85 @@ func containsFoldStr(s, sub string) bool {
 		}
 		return false
 	}()
+}
+
+// codeServerSetup ensures code-server is installed and running without password auth.
+// If not installed, auto-installs with auth disabled (KuraOS handles auth).
+// If installed but has password auth, reinstalls without it.
+// If installed but stopped or broken, starts or reinstalls.
+// POST /api/code-server/setup
+func (h *appstoreHandler) codeServerSetup(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	app, ok := h.mgr.GetInstalled(ctx, "code-server")
+	if !ok {
+		h.installCodeServer(ctx, w)
+		return
+	}
+
+	// Check if it's actually reachable
+	resp, err := http.Get("http://localhost:8443/")
+	if err == nil {
+		resp.Body.Close()
+		if resp.StatusCode == 302 {
+			// Password auth enabled — reinstall without it
+			_ = h.mgr.Uninstall(ctx, "code-server")
+			h.installCodeServer(ctx, w)
+			return
+		}
+		// Reachable without auth — already good
+		jsonOK(w, map[string]any{"status": "ready", "app": app})
+		return
+	}
+
+	// Not reachable — try to start
+	if err := h.mgr.Start(ctx, "code-server"); err != nil {
+		// Start failed (likely broken state) — force reinstall
+		_ = h.mgr.Uninstall(ctx, "code-server")
+		h.installCodeServer(ctx, w)
+		return
+	}
+
+	jsonOK(w, map[string]any{"status": "ready", "app": app})
+}
+
+func (h *appstoreHandler) installCodeServer(ctx context.Context, w http.ResponseWriter) {
+	tmpl, ok := appstore.GetTemplate("code-server")
+	if !ok {
+		jsonError(w, "code-server template not found", http.StatusNotFound)
+		return
+	}
+	req := appstore.InstallRequest{
+		Env: []appstore.EnvVar{
+			{Key: "PASSWORD", Value: ""},
+		},
+	}
+	app, err := h.mgr.Install(ctx, tmpl, req)
+	if err != nil {
+		jsonError(w, "failed to install code-server: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	jsonOK(w, map[string]any{
+		"status": "installed",
+		"app":    app,
+	})
+}
+
+// codeServerStatus returns the current status of code-server.
+// GET /api/code-server/status
+func (h *appstoreHandler) codeServerStatus(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	app, ok := h.mgr.GetInstalled(ctx, "code-server")
+	if !ok {
+		jsonOK(w, map[string]any{
+			"installed": false,
+			"status":    "not_installed",
+		})
+		return
+	}
+	jsonOK(w, map[string]any{
+		"installed": true,
+		"status":    string(app.Status),
+		"app":       app,
+	})
 }

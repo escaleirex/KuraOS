@@ -208,21 +208,17 @@ var builtinCatalog = []AppTemplate{
 			{HostPath: "{{.DataDir}}/config", ContainerPath: "/root/.config/code-server"},
 			{HostPath: "/", ContainerPath: "/host"},
 		},
-		Env: []EnvVar{
-			{Key: "PASSWORD", Value: "", Required: true, Hint: "Password to access the code-server UI"},
-		},
 		ComposeTemplate: `services:
   code-server:
     image: codercom/code-server:latest
     container_name: code-server
     user: "0:0"
+    command: ["--auth", "none"]
     ports:
       - "{{.Port8080}}:8080"
     volumes:
       - {{.DataDir}}/config:/root/.config/code-server
       - /:/host
-    environment:
-      - PASSWORD={{.PASSWORD}}
     working_dir: /host
     restart: unless-stopped
 `,

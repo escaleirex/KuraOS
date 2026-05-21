@@ -87,6 +87,15 @@ go_deps() {
   log "Go modules ready."
 }
 
+# ── Build Go binaries ─────────────────────────────────────────────────────────
+build_go() {
+  log "Building kura-daemon and kura-helper..."
+  export PATH="$PATH:/usr/local/go/bin"
+  CGO_ENABLED=1 go build -o "$ROOT/dist/kura-daemon" ./backend/cmd/kura-daemon
+  CGO_ENABLED=1 go build -o "$ROOT/dist/kura-helper" ./backend/cmd/kura-helper
+  log "Binaries ready → dist/"
+}
+
 # ── Install Python deps ───────────────────────────────────────────────────────
 python_deps() {
   log "Installing Python deps (uv sync)..."
@@ -152,12 +161,16 @@ EOF
 
 # ── Trap: kill all children on exit ──────────────────────────────────────────
 PIDS=()
+HELPER_PID=""
 cleanup() {
   echo ""
   log "Shutting down all services..."
   for pid in "${PIDS[@]}"; do
     kill "$pid" 2>/dev/null || true
   done
+  if [[ -n "$HELPER_PID" ]]; then
+    sudo kill "$HELPER_PID" 2>/dev/null || true
+  fi
   wait 2>/dev/null
   log "All services stopped."
 }
@@ -171,6 +184,19 @@ free_port() {
     warn "Port $port in use by PID $pid — killing..."
     kill "$pid" 2>/dev/null || true
     sleep 1
+  fi
+}
+
+start_helper() {
+  log "Starting kura-helper (privileged — may prompt for sudo password)..."
+  sudo mkdir -p /run/kura
+  sudo "$ROOT/dist/kura-helper" 2>&1 | prefix_log "helper" "$YLW" &
+  HELPER_PID=$!
+  sleep 1
+  if ! sudo test -S /run/kura/helper.sock 2>/dev/null; then
+    warn "kura-helper socket not found — real account login won't work (dev accounts still OK)"
+  else
+    log "kura-helper socket ready."
   fi
 }
 
@@ -222,6 +248,7 @@ deps_only() {
   install_uv
   install_docker
   go_deps
+  build_go
   python_deps
   frontend_deps
   setup_dev_env
@@ -245,6 +272,7 @@ main() {
   install_lsof
   install_docker
   go_deps
+  build_go
   python_deps
   frontend_deps
   setup_dev_env
@@ -254,11 +282,13 @@ main() {
 
   echo ""
   log "Starting services..."
+  echo -e "  ${YLW}[helper]${NC}  /run/kura/helper.sock"
   echo -e "  ${BLU}[daemon]${NC}  http://localhost:9080"
   echo -e "  ${MAG}[axis  ]${NC}  http://localhost:9765"
   echo -e "  ${CYN}[ui    ]${NC}  http://localhost:5173"
   echo ""
 
+  start_helper
   start_daemon
   sleep 2   # daemon needs a moment before axis tries to connect
   start_axis

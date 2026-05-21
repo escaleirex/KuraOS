@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 import type { AppID } from './windowStore'
 import { iconRect, widgetRect, rectsOverlap } from '@/shared/gridCollision'
 import { useWidgetStore } from './widgetStore'
+import { gridLayout } from '@/shared/gridConstants'
 
 export type IconKind = 'app' | 'folder'
 
@@ -36,6 +37,10 @@ const DEFAULT_ICONS: DesktopIcon[] = [
   { id: 'i-network',   kind: 'app', app: 'network',   label: 'Network',   icon: 'network',   col: 0, row: 5 },
   { id: 'i-hardware',  kind: 'app', app: 'hardware',  label: 'Hardware',  icon: 'hardware',  col: 0, row: 6 },
   { id: 'i-settings',  kind: 'app', app: 'settings',  label: 'Settings',  icon: 'settings',  col: 0, row: 7 },
+  { id: 'i-notepad',   kind: 'app', app: 'notepad',   label: 'Notepad',   icon: 'notepad',   col: 0, row: 8 },
+  { id: 'i-imageviewer', kind: 'app', app: 'imageviewer', label: 'Photos', icon: 'imageviewer', col: 0, row: 9 },
+  { id: 'i-videoplayer', kind: 'app', app: 'videoplayer', label: 'Videos', icon: 'videoplayer', col: 0, row: 10 },
+  { id: 'i-code',      kind: 'app', app: 'code',      label: 'Code Editor', icon: 'code',    col: 0, row: 11 },
 ]
 
 function getWidgetObstacles(): ReturnType<typeof widgetRect>[] {
@@ -71,6 +76,7 @@ function findFreeCellWithOccupied(
   occupied: Set<string>,
 ): { col: number; row: number } {
   const widgetRects = getWidgetObstacles()
+  const { cols, rows } = gridLayout()
 
   function collides(col: number, row: number): boolean {
     if (occupied.has(`${col},${row}`)) return true
@@ -83,8 +89,8 @@ function findFreeCellWithOccupied(
 
   if (!collides(preferCol, preferRow)) return { col: preferCol, row: preferRow }
 
-  for (let r = 0; r < 20; r++) {
-    for (let c = 0; c < 8; c++) {
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
       if (!collides(c, r)) return { col: c, row: r }
     }
   }
@@ -139,29 +145,38 @@ export const useIconStore = create<IconStore>()(
       arrangeIcons() {
         const icons = get().icons
         const widgetRects = getWidgetObstacles()
+        const { cols, rows } = gridLayout()
 
-        function collides(row: number, skipId: string): boolean {
-          for (const ir of [iconRect(0, row)]) {
-            for (const wr of widgetRects) {
-              if (rectsOverlap(ir, wr)) return true
-            }
+        function collides(col: number, row: number, skipId: string): boolean {
+          const ir = iconRect(col, row)
+          for (const wr of widgetRects) {
+            if (rectsOverlap(ir, wr)) return true
           }
           return false
         }
 
-        let nextRow = 0
+        let col = 0
+        let row = 0
         const arranged = icons.map((icon) => {
-          while (collides(nextRow, icon.id)) {
-            nextRow++
+          while (row < rows && collides(col, row, icon.id)) {
+            col++
+            if (col >= cols) {
+              col = 0
+              row++
+            }
           }
-          const r = { ...icon, col: 0, row: nextRow }
-          nextRow++
+          const r = { ...icon, col, row }
+          col++
+          if (col >= cols) {
+            col = 0
+            row++
+          }
           return r
         })
 
         set({ icons: arranged })
       },
     }),
-    { name: 'kura-desktop-icons', version: 2 }
+    { name: 'kura-desktop-icons', version: 4 }
   )
 )

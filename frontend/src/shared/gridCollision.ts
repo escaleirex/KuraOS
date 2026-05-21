@@ -1,4 +1,4 @@
-import { CELL_W, CELL_H, PAD_T, PAD_R, PAD_L, PAD_B } from '@/components/DesktopIcons'
+import { CELL_W, CELL_H, gridLayout, gridToPixel } from '@/shared/gridConstants'
 
 export interface GridRect {
   x: number
@@ -8,12 +8,8 @@ export interface GridRect {
 }
 
 export function iconRect(col: number, row: number): GridRect {
-  return {
-    x: window.innerWidth - (col + 1) * CELL_W - PAD_R,
-    y: PAD_T + row * CELL_H,
-    w: CELL_W,
-    h: CELL_H,
-  }
+  const p = gridToPixel(col, row)
+  return { x: p.x, y: p.y, w: CELL_W, h: CELL_H }
 }
 
 export function widgetRect(w: { x: number; y: number; w: number; h: number }): GridRect {
@@ -42,6 +38,8 @@ export function findFreePos(
   h: number,
   obstacles: GridRect[],
 ): { x: number; y: number } {
+  const { originX, originY, cols, rows } = gridLayout()
+  const gridLeft = originX - cols * CELL_W
   const target: GridRect = { x: startX, y: startY, w, h }
   if (!intersectsAny(target, obstacles)) return { x: startX, y: startY }
 
@@ -51,10 +49,8 @@ export function findFreePos(
         if (Math.abs(dc) !== r && Math.abs(dr) !== r) continue
         const cx = startX + dc * CELL_W
         const cy = startY + dr * CELL_H
-        if (cx < PAD_L || cy < PAD_T) continue
-        const gridW = window.innerWidth - PAD_L - PAD_R
-        const gridH = window.innerHeight - PAD_T - PAD_B
-        if (cx + w > PAD_L + gridW || cy + h > PAD_T + gridH) continue
+        if (cx < gridLeft || cy < originY) continue
+        if (cx + w > originX || cy + h > originY + rows * CELL_H) continue
         const candidate: GridRect = { x: cx, y: cy, w, h }
         if (!intersectsAny(candidate, obstacles)) return { x: cx, y: cy }
       }
@@ -64,17 +60,18 @@ export function findFreePos(
 }
 
 export function snapToGridPixel(x: number, y: number): { x: number; y: number } {
-  const gridW = window.innerWidth - PAD_L - PAD_R
-  const gridH = window.innerHeight - PAD_T - PAD_B
+  const { originX, originY, cols, rows } = gridLayout()
+  const gridLeft = originX - cols * CELL_W
   return {
-    x: PAD_L + Math.max(0, Math.min(gridW, Math.round((x - PAD_L) / CELL_W) * CELL_W)),
-    y: PAD_T + Math.max(0, Math.min(gridH, Math.round((y - PAD_T) / CELL_H) * CELL_H)),
+    x: gridLeft + Math.round((x - gridLeft) / CELL_W) * CELL_W,
+    y: originY + Math.round((y - originY) / CELL_H) * CELL_H,
   }
 }
 
 export function pixelToColRow(px: number, py: number): { col: number; row: number } {
+  const { originX, originY } = gridLayout()
   return {
-    col: Math.max(0, Math.round((window.innerWidth - PAD_R - px) / CELL_W) - 1),
-    row: Math.max(0, Math.round((py - PAD_T) / CELL_H)),
+    col: Math.max(0, Math.round((originX - px) / CELL_W) - 1),
+    row: Math.max(0, Math.round((py - originY) / CELL_H)),
   }
 }

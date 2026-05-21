@@ -44,7 +44,7 @@ type SMARTAttr struct {
 func ListDisks(ctx context.Context) ([]Disk, error) {
 	res, err := kexec.Run(ctx, 10*time.Second, "lsblk",
 		"--json", "--output", "PATH,MODEL,SERIAL,SIZE,FSTYPE,MOUNTPOINT,TRAN,ROTA",
-		"--bytes", "--nodeps",
+		"--bytes", "--exclude", "1,2,253",
 	)
 	if err != nil {
 		return nil, fmt.Errorf("lsblk: %w", err)
@@ -52,37 +52,125 @@ func ListDisks(ctx context.Context) ([]Disk, error) {
 
 	var raw struct {
 		BlockDevices []struct {
-			Path       string `json:"path"`
-			Model      string `json:"model"`
-			Serial     string `json:"serial"`
-			Size       uint64 `json:"size"`
-			FSType     string `json:"fstype"`
-			MountPoint string `json:"mountpoint"`
-			Tran       string `json:"tran"`
-			Rota       bool   `json:"rota"`
+			Path     string `json:"path"`
+			Model    string `json:"model"`
+			Serial   string `json:"serial"`
+			Size     uint64 `json:"size"`
+			FSType   string `json:"fstype"`
+			MountPt  string `json:"mountpoint"`
+			Tran     string `json:"tran"`
+			Rota     bool   `json:"rota"`
+			Children []struct {
+				Path     string `json:"path"`
+				Model    string `json:"model"`
+				Serial   string `json:"serial"`
+				Size     uint64 `json:"size"`
+				FSType   string `json:"fstype"`
+				MountPt  string `json:"mountpoint"`
+				Tran     string `json:"tran"`
+				Rota     bool   `json:"rota"`
+				Children []struct {
+					Path     string `json:"path"`
+					Model    string `json:"model"`
+					Serial   string `json:"serial"`
+					Size     uint64 `json:"size"`
+					FSType   string `json:"fstype"`
+					MountPt  string `json:"mountpoint"`
+					Tran     string `json:"tran"`
+					Rota     bool   `json:"rota"`
+				} `json:"children"`
+			} `json:"children"`
 		} `json:"blockdevices"`
 	}
 	if err := json.Unmarshal([]byte(res.Stdout), &raw); err != nil {
 		return nil, fmt.Errorf("parse lsblk: %w", err)
 	}
 
-	disks := make([]Disk, 0, len(raw.BlockDevices))
+	disks := make([]Disk, 0, len(raw.BlockDevices)*4)
 	for _, d := range raw.BlockDevices {
+		if isVirtualDevice(d.Path) {
+			continue
+		}
 		transport := d.Tran
 		if transport == "" {
 			transport = detectTransport(d.Path)
 		}
-		disks = append(disks, Disk{
-			Path:       d.Path,
-			Model:      strings.TrimSpace(d.Model),
-			Serial:     strings.TrimSpace(d.Serial),
-			SizeBytes:  d.Size,
-			FSType:     d.FSType,
-			MountPoint: d.MountPoint,
-			Transport:  transport,
-		})
+		// Parent disk (only if it has a mount point itself)
+		if d.MountPt != "" {
+			disks = append(disks, Disk{
+				Path:       d.Path,
+				Model:      strings.TrimSpace(d.Model),
+				Serial:     strings.TrimSpace(d.Serial),
+				SizeBytes:  d.Size,
+				FSType:     d.FSType,
+				MountPoint: d.MountPt,
+				Transport:  transport,
+			})
+		}
+		// Partitions (level 1)
+		for _, c := range d.Children {
+			if isVirtualDevice(c.Path) {
+				continue
+			}
+			cTransport := c.Tran
+			if cTransport == "" {
+				cTransport = transport
+			}
+			if c.MountPt != "" || c.FSType != "" {
+				disks = append(disks, Disk{
+					Path:       c.Path,
+					Model:      strings.TrimSpace(firstNonEmpty(c.Model, d.Model)),
+					Serial:     strings.TrimSpace(firstNonEmpty(c.Serial, d.Serial)),
+					SizeBytes:  c.Size,
+					FSType:     c.FSType,
+					MountPoint: c.MountPt,
+					Transport:  cTransport,
+				})
+			}
+			// Sub-partitions / LVM (level 2)
+			for _, sc := range c.Children {
+				if isVirtualDevice(sc.Path) {
+					continue
+				}
+				scTransport := sc.Tran
+				if scTransport == "" {
+					scTransport = cTransport
+				}
+				if sc.MountPt != "" || sc.FSType != "" {
+					disks = append(disks, Disk{
+						Path:       sc.Path,
+						Model:      strings.TrimSpace(firstNonEmpty(sc.Model, c.Model, d.Model)),
+						Serial:     strings.TrimSpace(firstNonEmpty(sc.Serial, c.Serial, d.Serial)),
+						SizeBytes:  sc.Size,
+						FSType:     sc.FSType,
+						MountPoint: sc.MountPt,
+						Transport:  scTransport,
+					})
+				}
+			}
+		}
 	}
 	return disks, nil
+}
+
+func firstNonEmpty(vals ...string) string {
+	for _, v := range vals {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
+}
+
+func isVirtualDevice(path string) bool {
+	base := filepath.Base(path)
+	prefixes := []string{"loop", "ram", "zram", "dm-", "md"}
+	for _, p := range prefixes {
+		if strings.HasPrefix(base, p) {
+			return true
+		}
+	}
+	return false
 }
 
 // SMARTCheck runs smartctl on a device and parses health + key attributes.

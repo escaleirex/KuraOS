@@ -1,10 +1,12 @@
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import { Outlet, NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, HardDrive, Bot, Network,
   Container, Cpu, Settings, LogOut,
 } from 'lucide-react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
+import { settingsApi } from '@/api/client'
 
 const DEFAULT_NAV_ITEMS = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -16,31 +18,34 @@ const DEFAULT_NAV_ITEMS = [
   { to: '/settings',  icon: Settings,        label: 'Settings' },
 ]
 
-const NAV_ORDER_KEY = 'kura_nav_order'
+const NAV_MAP = Object.fromEntries(DEFAULT_NAV_ITEMS.map(i => [i.to, i]))
 
-function loadOrder(): string[] | null {
-  try {
-    const raw = localStorage.getItem(NAV_ORDER_KEY)
-    return raw ? JSON.parse(raw) : null
-  } catch {
-    return null
-  }
-}
-
-function applyOrder(items: typeof DEFAULT_NAV_ITEMS, order: string[]) {
-  const map = Object.fromEntries(items.map(i => [i.to, i]))
-  return order.flatMap(to => (map[to] ? [map[to]] : []))
+function applyOrder(order: string[]) {
+  const ordered = order.flatMap(to => (NAV_MAP[to] ? [NAV_MAP[to]] : []))
+  const seen = new Set(order)
+  const rest = DEFAULT_NAV_ITEMS.filter(i => !seen.has(i.to))
+  return [...ordered, ...rest]
 }
 
 export function Layout() {
-  const savedOrder = loadOrder()
-  const initial = savedOrder
-    ? applyOrder(DEFAULT_NAV_ITEMS, savedOrder)
-    : DEFAULT_NAV_ITEMS
-
-  const [navItems, setNavItems] = useState(initial)
+  const qc = useQueryClient()
   const dragIndex = useRef<number | null>(null)
   const dragOverIndex = useRef<number | null>(null)
+
+  const { data } = useQuery({
+    queryKey: ['settings', 'nav-order'],
+    queryFn: () => settingsApi.getNavOrder().then(r => r.data),
+    staleTime: Infinity,
+  })
+
+  const mutation = useMutation({
+    mutationFn: (order: string[]) => settingsApi.saveNavOrder(order),
+    onSuccess: (_, order) => {
+      qc.setQueryData(['settings', 'nav-order'], { order })
+    },
+  })
+
+  const navItems = data?.order?.length ? applyOrder(data.order) : DEFAULT_NAV_ITEMS
 
   const handleDragStart = (index: number) => {
     dragIndex.current = index
@@ -59,8 +64,7 @@ export function Layout() {
     const next = [...navItems]
     const [moved] = next.splice(from, 1)
     next.splice(to, 0, moved)
-    setNavItems(next)
-    localStorage.setItem(NAV_ORDER_KEY, JSON.stringify(next.map(i => i.to)))
+    mutation.mutate(next.map(i => i.to))
     dragIndex.current = null
     dragOverIndex.current = null
   }

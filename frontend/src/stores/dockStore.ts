@@ -10,7 +10,7 @@ interface DockStore {
   isPinned: (app: AppID) => boolean
 }
 
-const DEFAULT_PINNED: AppID[] = ['settings', 'appstore', 'axis']
+const DEFAULT_PINNED: AppID[] = ['settings', 'appstore', 'axis', 'notepad']
 
 function syncToServer(pinned: AppID[]) {
   settingsApi.saveDock(pinned).catch(() => {})
@@ -39,7 +39,7 @@ export const useDockStore = create<DockStore>()(
         return get().pinned.includes(app)
       },
     }),
-    { name: 'kura-dock' }
+    { name: 'kura-dock', version: 2 }
   )
 )
 

@@ -2,15 +2,10 @@ import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Thermometer, HardDrives, Lightning, Monitor } from '@phosphor-icons/react'
 import { systemApi } from '@/api/client'
-import { useWidgetStore, DEFAULT_METRICS_SETTINGS, type MetricsSettings, type WidgetInstance } from '@/stores/widgetStore'
-import { WidgetShell } from './WidgetShell'
-
-// ── module-level history (survives maximize/remounts) ─────────────────────────
+import type { MetricsSettings } from '@/stores/widgetStore'
 
 type HMap = Map<string, number[]>
 const hist: HMap = new Map()
-
-// ── SVG micro-chart ───────────────────────────────────────────────────────────
 
 function MiniChart({ hkey, color, h = 36, max: fixedMax }: { hkey: string; color: string; h?: number; max?: number }) {
   const values = hist.get(hkey) ?? []
@@ -38,8 +33,6 @@ function MiniChart({ hkey, color, h = 36, max: fixedMax }: { hkey: string; color
     </svg>
   )
 }
-
-// ── shared primitives ─────────────────────────────────────────────────────────
 
 function fmtBytes(bytes: number): string {
   if (bytes >= 1024 ** 3) return `${(bytes / 1024 ** 3).toFixed(1)} GB`
@@ -94,11 +87,9 @@ function Bar({
   )
 }
 
-// ── content ───────────────────────────────────────────────────────────────────
-
 const CELL_H = 96
 
-function MetricsContent({ pixelH, settings }: { pixelH: number; settings: MetricsSettings }) {
+export function MetricsContent({ pixelH, settings, maxHistory }: { pixelH: number; settings: MetricsSettings; maxHistory?: number }) {
   const [, tick] = useState(0)
 
   const { data: res } = useQuery({
@@ -107,31 +98,31 @@ function MetricsContent({ pixelH, settings }: { pixelH: number; settings: Metric
     refetchInterval: settings.refreshInterval,
   })
 
-  // Accumulate history and force re-render so charts update
+  const histLimit = maxHistory ?? settings.chartHistory
+
   useEffect(() => {
     if (!res) return
     const { cpu, memory: m, gpus, disks, network } = res
-    pushHWithLimit('cpu.usage', cpu.usage_pct)
+    pushHLimit('cpu.usage', cpu.usage_pct)
     const memPct = m.total_bytes > 0 ? (m.used_bytes / m.total_bytes) * 100 : 0
-    pushHWithLimit('mem.usage', memPct)
-    if (mem && mem.swap_total > 0) {
-      pushHWithLimit('mem.swap', mem.swap_used / mem.swap_total * 100)
+    pushHLimit('mem.usage', memPct)
+    if (m.swap_total > 0) {
+      pushHLimit('mem.swap', m.swap_used / m.swap_total * 100)
     }
-    gpus?.forEach((g, i) => pushHWithLimit(`gpu.${i}.usage`, g.usage_pct))
+    gpus?.forEach((g, i) => pushHLimit(`gpu.${i}.usage`, g.usage_pct))
     disks?.forEach(dk => {
       const pct = dk.total_bytes && dk.used_bytes !== undefined
         ? (dk.used_bytes / dk.total_bytes!) * 100 : 0
-      pushHWithLimit(`disk.${dk.name}.pct`, pct)
+      pushHLimit(`disk.${dk.name}.pct`, pct)
     })
-    network?.forEach(n => pushHWithLimit(`net.${n.name}.rx`, n.rx_bps))
+    network?.forEach(n => pushHLimit(`net.${n.name}.rx`, n.rx_bps))
     tick(n => n + 1)
   }, [res])
 
-  const maxH = settings.chartHistory
-  function pushHWithLimit(key: string, val: number) {
+  function pushHLimit(key: string, val: number) {
     const a = hist.get(key) ?? []
     a.push(val)
-    if (a.length > maxH) a.shift()
+    if (a.length > histLimit) a.shift()
     hist.set(key, [...a])
   }
 
@@ -145,7 +136,6 @@ function MetricsContent({ pixelH, settings }: { pixelH: number; settings: Metric
   const topDisk = [...disks].sort((a, b) => (b.read_bps + b.write_bps) - (a.read_bps + a.write_bps))[0]
   const topNet  = [...nets].sort((a, b) => (b.rx_bps + b.tx_bps) - (a.rx_bps + a.tx_bps))[0]
 
-  // Responsive: 2 cells tall = small, 3 = medium charts, 4+ = large charts
   const chartH = settings.showCharts
     ? (pixelH >= CELL_H * 4 ? 52 : pixelH >= CELL_H * 3 ? 32 : 0)
     : 0
@@ -284,21 +274,5 @@ function MetricsContent({ pixelH, settings }: { pixelH: number; settings: Metric
         </div>
       )}
     </div>
-  )
-}
-
-// ── shell ─────────────────────────────────────────────────────────────────────
-
-export function MetricsWidget({ id }: { id: string }) {
-  const widget = useWidgetStore((s: { widgets: WidgetInstance[] }) => s.widgets.find((w: WidgetInstance) => w.id === id))
-  if (!widget) return null
-
-  const pixelH = widget.h
-  const settings = { ...DEFAULT_METRICS_SETTINGS, ...widget.settings?.metrics }
-
-  return (
-    <WidgetShell id={id}>
-      <MetricsContent pixelH={pixelH} settings={settings} />
-    </WidgetShell>
   )
 }

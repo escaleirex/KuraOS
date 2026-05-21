@@ -97,6 +97,10 @@ func dispatch(op ipc.Op) ipc.Reply {
 	case "system.modprobe":
 		return ops.Modprobe(op.Params)
 
+	// Auth
+	case "auth.pam_verify":
+		return ops.PAMVerify(op.Params)
+
 	default:
 		return ipc.Reply{OK: false, Error: fmt.Sprintf("unknown action: %q", op.Action)}
 	}
