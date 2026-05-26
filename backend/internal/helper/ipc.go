@@ -28,8 +28,8 @@ func (s *Server) Listen() error {
 	}
 	defer ln.Close()
 
-	// Restrict to root:kura only
-	if err := os.Chmod(s.socketPath, 0600); err != nil {
+	// Allow group access so kura-daemon (running as non-root) can connect
+	if err := os.Chmod(s.socketPath, 0660); err != nil {
 		return fmt.Errorf("chmod socket: %w", err)
 	}
 
