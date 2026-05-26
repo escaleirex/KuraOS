@@ -171,7 +171,7 @@ function CPUDetail({ d, hist }: { d: SystemResources; hist: HMap }) {
       {cpu.temp_c !== undefined && cpu.temp_c > 0 && (
         <div>
           <p className="text-[10px] text-white/30 uppercase tracking-widest mb-2">Temperature</p>
-          <AreaChart values={hist.get('cpu.temp') ?? []} color={tempColor(cpu.temp_c)} h={80} gid="cpu-temp" unit="°C" />
+          <AreaChart values={hist.get('cpu.temp') ?? []} color={tempColor(cpu.temp_c)} h={80} gid="cpu-temp" unit="°C" max={100} />
         </div>
       )}
       <div>
