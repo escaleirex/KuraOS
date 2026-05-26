@@ -12,9 +12,9 @@ const APP_COLORS: Record<AppID, { bg: string; glow: string }> = Object.fromEntri
 
 const MENU_STYLE: React.CSSProperties = {
   minWidth:       '168px',
-  background:     'rgba(18,20,30,0.97)',
+  background:     'var(--kura-menu-bg)',
   backdropFilter: 'blur(24px)',
-  border:         '1px solid rgba(255,255,255,0.10)',
+  border:         '1px solid var(--kura-alpha-10)',
   boxShadow:      '0 16px 48px rgba(0,0,0,0.72)',
 }
 
@@ -46,8 +46,8 @@ function WindowPreview({ app, onClose }: {
           className="flex flex-col rounded-xl overflow-hidden cursor-pointer select-none"
           style={{
             width:      160,
-            background: 'rgba(15,17,25,0.97)',
-            border:     '1px solid rgba(255,255,255,0.10)',
+            background: 'var(--kura-menu-bg)',
+            border:     '1px solid var(--kura-alpha-10)',
             boxShadow:  '0 8px 32px rgba(0,0,0,0.65)',
           }}
           onClick={() => {
@@ -58,7 +58,7 @@ function WindowPreview({ app, onClose }: {
           {/* Mini chrome */}
           <div
             className="flex items-center justify-between px-2.5 py-1.5"
-            style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+            style={{ background: 'var(--kura-alpha-04)', borderBottom: '1px solid var(--kura-alpha-06)' }}
           >
             <span className="text-[10px] text-white/50 truncate max-w-[112px]">{win.title}</span>
             <button
@@ -71,7 +71,7 @@ function WindowPreview({ app, onClose }: {
           {/* Preview area */}
           <div
             className="flex items-center justify-center"
-            style={{ height: 90, background: 'rgba(10,12,20,0.9)' }}
+            style={{ height: 90, background: 'var(--kura-menu-bg)' }}
           >
             <div
               className="w-12 h-12 rounded-2xl flex items-center justify-center"
@@ -195,7 +195,7 @@ function DockItem({ app }: { app: AppID }) {
         className="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-md text-xs
                    text-white/90 whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100
                    transition-opacity duration-150"
-        style={{ background: 'rgba(15,17,25,0.92)', border: '1px solid rgba(255,255,255,0.10)' }}
+        style={{ background: 'var(--kura-menu-bg)', border: '1px solid var(--kura-alpha-10)' }}
       >
         {meta.title}
       </div>
@@ -235,7 +235,7 @@ function DockItem({ app }: { app: AppID }) {
       >
         <meta.Icon size={22} weight="fill" color="white" />
         {isMinimized && (
-          <div className="absolute inset-0 rounded-xl" style={{ background: 'rgba(0,0,0,0.4)' }} />
+          <div className="absolute inset-0 rounded-xl" style={{ background: 'var(--kura-overlay)' }} />
         )}
       </motion.button>
 
@@ -293,10 +293,10 @@ export function Dock() {
         <div
           className="flex items-center gap-2.5 px-3 py-2 rounded-2xl"
           style={{
-            background:     'rgba(20,22,32,0.88)',
+            background:     'var(--kura-menu-bg)',
             backdropFilter: 'blur(24px) saturate(1.6)',
-            border:         '1px solid rgba(255,255,255,0.08)',
-            boxShadow:      '0 -1px 0 rgba(255,255,255,0.04), 0 8px 32px rgba(0,0,0,0.6)',
+            border:         '1px solid var(--kura-alpha-08)',
+            boxShadow:      '0 -1px 0 var(--kura-alpha-04), 0 8px 32px rgba(0,0,0,0.6)',
           }}
         >
           {/* Pinned apps */}
@@ -312,7 +312,7 @@ export function Dock() {
               <div className="flex items-center self-stretch px-0.5">
                 <div
                   className="w-px self-stretch rounded-full"
-                  style={{ background: 'rgba(255,255,255,0.13)' }}
+                  style={{ background: 'var(--kura-alpha-13)' }}
                 />
               </div>
               {openUnpinned.map(app => (

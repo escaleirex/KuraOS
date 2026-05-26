@@ -44,6 +44,27 @@ func Run(ctx context.Context, timeout time.Duration, binary string, args ...stri
 	return &Result{stdout.String(), stderr.String()}, nil
 }
 
+// RunWithStdin executes a binary with explicit args, writing data to stdin.
+func RunWithStdin(ctx context.Context, timeout time.Duration, stdin string, binary string, args ...string) (*Result, error) {
+	if timeout == 0 {
+		timeout = 30 * time.Second
+	}
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, binary, args...)
+	cmd.Stdin = strings.NewReader(stdin)
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	if err := cmd.Run(); err != nil {
+		return &Result{stdout.String(), stderr.String()},
+			fmt.Errorf("%s: %w — stderr: %s", binary, err, strings.TrimSpace(stderr.String()))
+	}
+	return &Result{stdout.String(), stderr.String()}, nil
+}
+
 // MustBeBlockDevice validates a device path against the allowlist pattern.
 func MustBeBlockDevice(path string) error {
 	if !reDevBlock.MatchString(path) {

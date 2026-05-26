@@ -355,13 +355,13 @@ export function NetworkPage() {
 
       {/* FIREWALL ADD MODAL */}
       {showFirewallModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
+        <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
           <form onSubmit={handleAddRule} className="rounded-xl p-5 w-full max-w-sm space-y-4 animate-in fade-in zoom-in duration-200"
             style={{
-              background: 'rgba(12,14,22,0.82)',
+              background: 'var(--kura-glass)',
               backdropFilter: 'blur(32px) saturate(1.5)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
+              border: '1px solid var(--kura-alpha-08)',
+              boxShadow: '0 32px 80px var(--kura-shadow), 0 0 0 0.5px var(--kura-glass-border) inset',
             }}>
             <h3 className="font-bold text-lg text-white">Criar Nova Regra de Acesso</h3>
 
@@ -434,13 +434,13 @@ export function NetworkPage() {
 
       {/* PROXY ADD MODAL */}
       {showProxyModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
+        <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
           <form onSubmit={handleAddProxy} className="rounded-xl p-5 w-full max-w-sm space-y-4"
             style={{
-              background: 'rgba(12,14,22,0.82)',
+              background: 'var(--kura-glass)',
               backdropFilter: 'blur(32px) saturate(1.5)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
+              border: '1px solid var(--kura-alpha-08)',
+              boxShadow: '0 32px 80px var(--kura-shadow), 0 0 0 0.5px var(--kura-glass-border) inset',
             }}>
             <h3 className="font-bold text-lg text-white">Configurar Novo Proxy Host</h3>
 

@@ -17,9 +17,9 @@ function ClockContent() {
     <div
       className="w-full h-full rounded-2xl px-4 py-3 flex flex-col justify-center select-none"
       style={{
-        background:     'rgba(12,14,22,0.75)',
+        background:     'var(--kura-glass)',
         backdropFilter: 'blur(20px) saturate(1.4)',
-        border:         '1px solid rgba(255,255,255,0.07)',
+        border:         '1px solid var(--kura-alpha-07)',
         boxShadow:      '0 8px 32px rgba(0,0,0,0.45)',
       }}
     >

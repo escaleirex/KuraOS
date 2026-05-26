@@ -12,9 +12,9 @@ interface Pos { x: number; y: number }
 
 const MENU_STYLE: React.CSSProperties = {
   minWidth:       '160px',
-  background:     'rgba(18,20,30,0.96)',
+  background:     'var(--kura-menu-bg)',
   backdropFilter: 'blur(24px)',
-  border:         '1px solid rgba(255,255,255,0.10)',
+  border:         '1px solid var(--kura-alpha-10)',
   boxShadow:      '0 16px 48px rgba(0,0,0,0.7)',
 }
 
@@ -133,9 +133,9 @@ export function WidgetShell({ id, children }: Props) {
             width: CELL_W,
             height: CELL_H,
             zIndex: 1,
-            border: '1px solid rgba(99,102,241,0.20)',
-            background: 'rgba(99,102,241,0.06)',
-            boxShadow: '0 0 16px rgba(99,102,241,0.06)',
+            border: '1px solid color-mix(in srgb, var(--kura-accent) 20%, transparent)',
+            background: 'color-mix(in srgb, var(--kura-accent) 6%, transparent)',
+            boxShadow: '0 0 16px color-mix(in srgb, var(--kura-accent) 6%, transparent)',
           }}
         />
       ))}

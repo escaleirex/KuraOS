@@ -55,8 +55,8 @@ export function AppInfoModal({ app, hubRef, onClose, onInstalled }: Props) {
 
   return (
     <motion.div
-      className="fixed inset-0 flex items-center justify-center"
-      style={{ zIndex: 20000, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
+      className="absolute inset-0 flex items-center justify-center"
+      style={{ zIndex: 20000, background: 'var(--kura-overlay)', backdropFilter: 'blur(8px)' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -68,10 +68,10 @@ export function AppInfoModal({ app, hubRef, onClose, onInstalled }: Props) {
           width: 680,
           maxHeight: '88vh',
           borderRadius: 20,
-          background: 'rgba(12,14,22,0.82)',
+          background: 'var(--kura-glass)',
           backdropFilter: 'blur(32px) saturate(1.5)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
+          border: '1px solid var(--kura-alpha-08)',
+          boxShadow: '0 32px 80px var(--kura-shadow), 0 0 0 0.5px var(--kura-glass-border) inset',
         }}
         initial={{ scale: 0.94, y: 12 }}
         animate={{ scale: 1, y: 0 }}
@@ -98,14 +98,14 @@ export function AppInfoModal({ app, hubRef, onClose, onInstalled }: Props) {
                   <button
                     onClick={prevShot}
                     className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full transition-colors"
-                    style={{ background: 'rgba(0,0,0,0.5)', color: 'white' }}
+                    style={{ background: 'var(--kura-overlay)', color: 'var(--kura-text)' }}
                   >
                     <ChevronLeft size={16} />
                   </button>
                   <button
                     onClick={nextShot}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full transition-colors"
-                    style={{ background: 'rgba(0,0,0,0.5)', color: 'white' }}
+                    style={{ background: 'var(--kura-overlay)', color: 'var(--kura-text)' }}
                   >
                     <ChevronRight size={16} />
                   </button>
@@ -115,7 +115,7 @@ export function AppInfoModal({ app, hubRef, onClose, onInstalled }: Props) {
                         key={i}
                         onClick={() => setScreenshotIdx(i)}
                         className="w-1.5 h-1.5 rounded-full transition-all"
-                        style={{ background: i === screenshotIdx ? 'white' : 'rgba(255,255,255,0.35)' }}
+                        style={{ background: i === screenshotIdx ? 'white' : 'var(--kura-alpha-35)' }}
                       />
                     ))}
                   </div>
@@ -140,7 +140,7 @@ export function AppInfoModal({ app, hubRef, onClose, onInstalled }: Props) {
           <button
             onClick={onClose}
             className="absolute top-3 right-3 p-1.5 rounded-full text-white/70 hover:text-white transition-colors"
-            style={{ background: 'rgba(0,0,0,0.5)' }}
+            style={{ background: 'var(--kura-overlay)' }}
           >
             <X size={16} />
           </button>
@@ -198,7 +198,7 @@ export function AppInfoModal({ app, hubRef, onClose, onInstalled }: Props) {
               )}
               <span
                 className="text-xs px-2 py-0.5 rounded-full capitalize"
-                style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.40)' }}
+                style={{ background: 'var(--kura-alpha-06)', color: 'var(--kura-alpha-40)' }}
               >
                 {d.category}
               </span>
@@ -241,7 +241,7 @@ export function AppInfoModal({ app, hubRef, onClose, onInstalled }: Props) {
             <h3 className="text-xs font-semibold text-white/30 uppercase tracking-wider">Image</h3>
             <div
               className="flex items-center gap-2 px-3 py-2 rounded-lg font-mono text-sm text-white/60"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+              style={{ background: 'var(--kura-alpha-04)', border: '1px solid var(--kura-alpha-06)' }}
             >
               {d.image}
             </div>
@@ -258,7 +258,7 @@ export function AppInfoModal({ app, hubRef, onClose, onInstalled }: Props) {
                   <span
                     key={tag}
                     className="text-xs px-2 py-1 rounded-lg font-mono"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.45)' }}
+                    style={{ background: 'var(--kura-alpha-05)', color: 'var(--kura-alpha-45)' }}
                   >
                     {tag}
                   </span>

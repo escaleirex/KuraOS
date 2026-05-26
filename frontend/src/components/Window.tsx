@@ -44,8 +44,8 @@ export function Window({ win, children }: Props) {
       position:      'fixed',
       top:           `${MENUBAR_H}px`,
       left:          '0',
-      background:    'rgba(99,179,237,0.12)',
-      border:        '1.5px solid rgba(99,179,237,0.45)',
+      background:    'color-mix(in srgb, var(--kura-accent) 12%, transparent)',
+      border:        '1.5px solid color-mix(in srgb, var(--kura-accent) 45%, transparent)',
       pointerEvents: 'none',
       zIndex:        '99998',
       transition:    'width 0.12s ease, height 0.12s ease, left 0.12s ease',
@@ -189,12 +189,12 @@ export function Window({ win, children }: Props) {
             onMouseDown={() => bringToFront(win.id)}
           >
             <div className="flex flex-col h-full overflow-hidden"
-              style={{ background:'rgba(12,14,22,0.92)', backdropFilter:'blur(32px) saturate(1.5)' }}>
+              style={{ background: 'var(--kura-glass)', backdropFilter:'blur(32px) saturate(1.5)' }}>
               <div
                 className="flex items-center justify-between px-3 shrink-0 select-none gap-2 cursor-grab active:cursor-grabbing"
                 onMouseDown={handleMaxTitleMouseDown}
                 onDoubleClick={e => { e.stopPropagation(); toggleMaximize(win.id) }}
-                style={{ height:'36px', background:'rgba(255,255,255,0.03)', borderBottom:'1px solid rgba(255,255,255,0.06)' }}
+                style={{ height:'36px', background:'var(--kura-surface-alt)', borderBottom:'1px solid var(--kura-border)' }}
               >
                 <div className="flex items-center gap-1.5 z-10 pl-1 shrink-0 flex-1 min-w-0">
                   <win.Icon size={14} weight="fill" className="text-white/50 shrink-0" />
@@ -206,7 +206,7 @@ export function Window({ win, children }: Props) {
                   <button className="w-6 h-6 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-rose-500/85 transition-colors cursor-pointer" onClick={e=>{e.stopPropagation();closeWindow(win.id)}} title="Close"><X className="w-3.5 h-3.5"/></button>
                 </div>
               </div>
-              <div className="flex-1 overflow-auto">{children}</div>
+              <div className="relative flex-1 overflow-auto">{children}</div>
             </div>
           </motion.div>
         )}
@@ -254,11 +254,11 @@ export function Window({ win, children }: Props) {
             }}
           >
             <div className="flex flex-col h-full rounded-2xl overflow-hidden shadow-2xl"
-              style={{ background:'rgba(12,14,22,0.82)', backdropFilter:'blur(32px) saturate(1.5)', border:'1px solid rgba(255,255,255,0.08)', boxShadow:'0 32px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04) inset' }}>
+              style={{ background: 'var(--kura-glass)', backdropFilter:'blur(32px) saturate(1.5)', border:'1px solid var(--kura-glass-border)', boxShadow:'0 32px 80px var(--kura-shadow), 0 0 0 0.5px var(--kura-glass-border) inset' }}>
               <div
                 className="window-titlebar flex items-center justify-between px-3 shrink-0 select-none cursor-grab active:cursor-grabbing gap-2"
                 onDoubleClick={e => { e.stopPropagation(); toggleMaximize(win.id) }}
-                style={{ height:'36px', background:'rgba(255,255,255,0.03)', borderBottom:'1px solid rgba(255,255,255,0.06)' }}
+                style={{ height:'36px', background:'var(--kura-surface-alt)', borderBottom:'1px solid var(--kura-border)' }}
               >
                 <div className="flex items-center gap-1.5 z-10 pl-1 shrink-0 flex-1 min-w-0">
                   <win.Icon size={14} weight="fill" className="text-white/50 shrink-0" />
@@ -270,7 +270,7 @@ export function Window({ win, children }: Props) {
                   <button className="w-6 h-6 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-rose-500/85 transition-colors cursor-pointer" onClick={e=>{e.stopPropagation();closeWindow(win.id)}} title="Close"><X className="w-3.5 h-3.5"/></button>
                 </div>
               </div>
-              <div className="flex-1 overflow-auto">{children}</div>
+              <div className="relative flex-1 overflow-auto">{children}</div>
             </div>
           </Rnd>
         </motion.div>

@@ -55,8 +55,8 @@ export function MenuBar() {
       style={{
         zIndex: 9000,
         backdropFilter: 'blur(24px)',
-        background: 'rgba(5,8,16,0.70)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        background: 'var(--kura-glass)',
+        borderBottom: '1px solid var(--kura-border)',
       }}
     >
       {/* Left */}

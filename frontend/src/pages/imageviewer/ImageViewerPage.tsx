@@ -71,7 +71,7 @@ export function ImageViewerPage() {
       {/* toolbar */}
       <div
         className="flex items-center gap-1 px-3 py-1.5 shrink-0"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}
+        style={{ borderBottom: '1px solid var(--kura-alpha-06)', background: 'var(--kura-alpha-02)' }}
       >
         <button
           onClick={() => setPickerOpen(true)}
@@ -82,7 +82,7 @@ export function ImageViewerPage() {
           Open
         </button>
 
-        <div className="w-px h-4 mx-1" style={{ background: 'rgba(255,255,255,0.08)' }} />
+        <div className="w-px h-4 mx-1" style={{ background: 'var(--kura-alpha-08)' }} />
 
         <button
           onClick={() => setScale(s => Math.min(8, s + 0.25))}

@@ -59,9 +59,9 @@ function FolderPopover({ apps, onClose, onOpen }: {
       transition={{ type: 'spring', stiffness: 420, damping: 28 }}
       className="absolute bottom-full right-0 mb-3 p-2.5 rounded-2xl"
       style={{
-        background:     'rgba(15,17,25,0.96)',
+        background:     'var(--kura-menu-bg)',
         backdropFilter: 'blur(24px)',
-        border:         '1px solid rgba(255,255,255,0.10)',
+        border:         '1px solid var(--kura-alpha-10)',
         boxShadow:      '0 16px 48px rgba(0,0,0,0.65)',
         minWidth:       '160px',
         zIndex:         100,
@@ -75,7 +75,7 @@ function FolderPopover({ apps, onClose, onOpen }: {
           <button
             key={app}
             onClick={e => { e.stopPropagation(); onOpen(app); onClose() }}
-            className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg
+            className="w-full flex items-center gap-2.5 px-2 py-1.5 kura-density-pad rounded-lg
                        hover:bg-white/[0.08] transition-colors cursor-pointer text-left"
           >
             <div
@@ -157,7 +157,7 @@ function IconItem({
           style={{
             background: bg,
             boxShadow: isSelected
-              ? '0 2px 8px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.55)'
+              ? '0 2px 8px rgba(0,0,0,0.5), 0 0 0 2px var(--kura-alpha-55)'
               : '0 2px 8px rgba(0,0,0,0.45)',
             cursor: 'grab',
           }}
@@ -186,8 +186,7 @@ function IconItem({
         </motion.div>
 
         <span
-          className="text-xs text-white/85 text-center leading-tight max-w-[88px] line-clamp-2"
-          style={{ textShadow: '0 1px 5px rgba(0,0,0,0.95), 0 0 16px rgba(0,0,0,0.8)' }}
+          className="text-xs text-white/85 text-center leading-tight max-w-[88px] line-clamp-2 kura-text-shadow"
         >
           {icon.label}
         </span>
@@ -388,9 +387,9 @@ export function DesktopIcons() {
               top: cell.y,
               width: CELL_W,
               height: CELL_H,
-              border: '1px solid rgba(99,102,241,0.20)',
-              background: 'rgba(99,102,241,0.06)',
-              boxShadow: '0 0 16px rgba(99,102,241,0.06)',
+              border: '1px solid color-mix(in srgb, var(--kura-accent) 20%, transparent)',
+              background: 'color-mix(in srgb, var(--kura-accent) 6%, transparent)',
+              boxShadow: '0 0 16px color-mix(in srgb, var(--kura-accent) 6%, transparent)',
             }}
           />
         ))}
@@ -418,8 +417,8 @@ export function DesktopIcons() {
           style={{
             ...lassoStyle,
             zIndex: 9,
-            border:       '1px solid rgba(96,165,250,0.65)',
-            background:   'rgba(96,165,250,0.10)',
+            border:       '1px solid var(--kura-accent)',
+            background:   'color-mix(in srgb, var(--kura-accent) 10%, transparent)',
             borderRadius: 3,
           }}
         />
@@ -443,16 +442,16 @@ export function DesktopIcons() {
                 top: y,
                 zIndex: 99999,
                 minWidth: menuW,
-                background: 'rgba(18,20,30,0.97)',
+                background: 'var(--kura-menu-bg)',
                 backdropFilter: 'blur(24px)',
-                border: '1px solid rgba(255,255,255,0.10)',
+                border: '1px solid var(--kura-alpha-10)',
                 boxShadow: '0 16px 48px rgba(0,0,0,0.72)',
               }}
               data-desktop-ctx
             >
               <button
                 onClick={() => { pinned ? unpin(app) : pin(app); setCtxMenu(null) }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-white/80
+                className="w-full flex items-center gap-2.5 px-3 py-2 kura-density-pad text-sm text-white/80
                            hover:bg-white/[0.07] transition-colors cursor-pointer"
               >
                 <PushPin size={14} weight={pinned ? 'fill' : 'regular'} />

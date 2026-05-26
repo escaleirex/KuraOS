@@ -791,10 +791,10 @@ export function FilesPage() {
             left: Math.min(ctxMenu.pos.x, window.innerWidth - 240),
             top: Math.min(ctxMenu.pos.y, window.innerHeight - 100),
             minWidth: '220px',
-            background: 'rgba(18,20,30,0.96)',
+            background: 'var(--kura-menu-bg)',
             backdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255,255,255,0.10)',
-            boxShadow: '0 16px 48px rgba(0,0,0,0.7)',
+            border: '1px solid var(--kura-alpha-10)',
+            boxShadow: '0 16px 48px var(--kura-shadow)',
           }}
         >
           <div className="px-3 py-1.5 text-[11px] text-white/30 font-medium truncate border-b border-white/[0.06] mb-1 pb-1">

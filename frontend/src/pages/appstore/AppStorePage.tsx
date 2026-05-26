@@ -157,22 +157,22 @@ export function AppStorePage() {
   }
 
   return (
-    <div className="flex flex-col h-full select-none" style={{ background: 'rgba(8,10,18,0.97)', color: 'white' }}>
+    <div className="flex flex-col h-full select-none" style={{ background: 'var(--kura-menu-bg)', color: 'var(--kura-text)' }}>
 
       {/* ── Top bar ── */}
       <div className="flex items-center gap-3 px-5 py-3 border-b border-white/5 flex-shrink-0">
         <Package size={18} className="text-white/70" />
         <h1 className="font-semibold text-sm">App Store</h1>
 
-        <div className="flex gap-0.5 ml-3 p-0.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
+        <div className="flex gap-0.5 ml-3 p-0.5 rounded-lg" style={{ background: 'var(--kura-alpha-05)' }}>
           {TABS.map(t => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
               className="px-3 py-1 rounded-md text-xs transition-all"
               style={{
-                background: tab === t.id ? 'rgba(255,255,255,0.12)' : 'transparent',
-                color: tab === t.id ? 'white' : 'rgba(255,255,255,0.45)',
+                background: tab === t.id ? 'var(--kura-alpha-12)' : 'transparent',
+                color: tab === t.id ? 'white' : 'var(--kura-alpha-45)',
               }}
             >
               {t.label}
@@ -407,7 +407,7 @@ function Carousel({
       <button
         onClick={() => scroll('left')}
         className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-        style={{ background: 'rgba(0,0,0,0.7)', color: 'white' }}
+        style={{ background: 'var(--kura-overlay)', color: 'var(--kura-text)' }}
       >
         <ChevronLeft size={16} />
       </button>
@@ -432,7 +432,7 @@ function Carousel({
       <button
         onClick={() => scroll('right')}
         className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-        style={{ background: 'rgba(0,0,0,0.7)', color: 'white' }}
+        style={{ background: 'var(--kura-overlay)', color: 'var(--kura-text)' }}
       >
         <ChevronRight size={16} />
       </button>
@@ -461,8 +461,8 @@ function CarouselCard({
       style={{
         width: 200,
         scrollSnapAlign: 'start',
-        background: 'rgba(255,255,255,0.04)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        background: 'var(--kura-alpha-04)',
+        border: '1px solid var(--kura-alpha-08)',
       }}
     >
       {/* Art area */}
@@ -503,7 +503,7 @@ function CarouselCard({
         </div>
         <span
           className="text-xs capitalize px-1.5 py-0.5 rounded-full w-fit"
-          style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.45)' }}
+          style={{ background: 'var(--kura-alpha-07)', color: 'var(--kura-alpha-45)' }}
         >
           {app.category}
         </span>
@@ -571,7 +571,7 @@ function ListCard({
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
       className="flex items-start gap-3 p-3.5 rounded-xl cursor-pointer"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+      style={{ background: 'var(--kura-alpha-04)', border: '1px solid var(--kura-alpha-07)' }}
     >
       <div
         className="w-11 h-11 flex-shrink-0 rounded-xl flex items-center justify-center"
@@ -608,11 +608,11 @@ function HubResultRow({
       onClick={() => onOpen(app)}
       whileHover={{ scale: 1.005 }}
       className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+      style={{ background: 'var(--kura-alpha-04)', border: '1px solid var(--kura-alpha-07)' }}
     >
       <div
         className="w-10 h-10 flex-shrink-0 rounded-xl flex items-center justify-center"
-        style={{ background: 'rgba(255,255,255,0.06)' }}
+        style={{ background: 'var(--kura-alpha-06)' }}
       >
         <AppCategoryIcon category={app.category} size={20} className="text-white/60" />
       </div>
@@ -657,7 +657,7 @@ function InstalledRow({
   return (
     <div
       className="flex items-center gap-3 px-4 py-3 rounded-xl"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+      style={{ background: 'var(--kura-alpha-04)', border: '1px solid var(--kura-alpha-07)' }}
     >
       <AppCategoryIcon category={app.category} size={22} className="text-white/70 shrink-0" />
       <div className="flex-1 min-w-0">
@@ -704,7 +704,7 @@ function SkeletonCarousel() {
         <div
           key={i}
           className="flex-shrink-0 rounded-2xl animate-pulse"
-          style={{ width: 200, height: 180, background: 'rgba(255,255,255,0.04)' }}
+          style={{ width: 200, height: 180, background: 'var(--kura-alpha-04)' }}
         />
       ))}
     </div>
@@ -722,10 +722,10 @@ function IconBtn({
     <button
       onClick={onClick} title={title}
       className="p-1.5 rounded-lg transition-colors"
-      style={{ color: danger ? '#f87171' : accent ? '#10b981' : 'rgba(255,255,255,0.4)' }}
+      style={{ color: danger ? '#f87171' : accent ? '#10b981' : 'var(--kura-alpha-40)' }}
       onMouseEnter={e => {
         ;(e.currentTarget as HTMLElement).style.background = danger
-          ? 'rgba(248,113,113,0.1)' : accent ? 'rgba(16,185,129,0.1)' : 'rgba(255,255,255,0.06)'
+          ? 'rgba(248,113,113,0.1)' : accent ? 'rgba(16,185,129,0.1)' : 'var(--kura-alpha-06)'
       }}
       onMouseLeave={e => { ;(e.currentTarget as HTMLElement).style.background = 'transparent' }}
     >

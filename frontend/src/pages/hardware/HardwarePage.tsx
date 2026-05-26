@@ -49,7 +49,7 @@ function Sparkline({ values, color, w = 64, h = 28, gid, max }: { values: number
 
 function AreaChart({ values, color, h = 110, gid, unit = '%', max }: { values: number[]; color: string; h?: number; gid: string; unit?: string; max?: number }) {
   const w = 600
-  if (values.length < 2) return <div style={{ height: h, background: 'rgba(255,255,255,0.04)', borderRadius: 12 }} className="w-full animate-pulse" />
+  if (values.length < 2) return <div style={{ height: h, background: 'var(--kura-alpha-04)', borderRadius: 12 }} className="w-full animate-pulse" />
 
   const ceil = max ?? Math.max(...values, 0.1)
   const n = values.length
@@ -62,7 +62,7 @@ function AreaChart({ values, color, h = 110, gid, unit = '%', max }: { values: n
   const lastVal = values[values.length - 1]
 
   return (
-    <div className="rounded-xl overflow-hidden relative" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+    <div className="rounded-xl overflow-hidden relative" style={{ background: 'var(--kura-alpha-04)', border: '1px solid var(--kura-alpha-06)' }}>
       <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="w-full" style={{ height: h }}>
         <defs>
           <linearGradient id={gid + '-a'} x1="0" y1="0" x2="0" y2="1">
@@ -133,12 +133,12 @@ function SidebarItem({
     <button
       onClick={onClick}
       className="w-full text-left px-3 py-2.5 rounded-xl transition-all cursor-pointer flex flex-col gap-1.5"
-      style={{ background: active ? 'rgba(255,255,255,0.09)' : 'transparent' }}
-      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)' }}
+      style={{ background: active ? 'var(--kura-alpha-09)' : 'transparent' }}
+      onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--kura-alpha-04)' }}
       onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
     >
       <div className="flex items-center gap-2">
-        <Icon size={14} weight="fill" className="shrink-0" style={{ color: active ? color : 'rgba(255,255,255,0.5)' }} />
+        <Icon size={14} weight="fill" className="shrink-0" style={{ color: active ? color : 'var(--kura-alpha-50)' }} />
         <span className={`text-xs font-medium truncate ${active ? 'text-white' : 'text-white/60'}`}>{label}</span>
       </div>
       {sublabel && <p className="text-[10px] text-white/30 pl-5 truncate">{sublabel}</p>}
@@ -176,7 +176,7 @@ function CPUDetail({ d, hist }: { d: SystemResources; hist: HMap }) {
       )}
       <div>
         <p className="text-[10px] text-white/30 uppercase tracking-widest mb-2">Properties</p>
-        <div className="rounded-xl px-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="rounded-xl px-3" style={{ background: 'var(--kura-alpha-04)', border: '1px solid var(--kura-alpha-06)' }}>
           <Prop label="Physical Cores" value={String(cpu.cores)} />
           <Prop label="Logical Threads" value={String(cpu.threads)} />
           {avg > 0 && <Prop label="Avg Frequency" value={`${(avg / 1000).toFixed(2)} GHz`} />}
@@ -191,12 +191,12 @@ function CPUDetail({ d, hist }: { d: SystemResources; hist: HMap }) {
             {cpu.per_core.map((v, i) => {
               const c = v > 80 ? '#ef4444' : v > 50 ? '#f59e0b' : '#3b82f6'
               return (
-                <div key={i} className="rounded-lg p-2 space-y-1" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                <div key={i} className="rounded-lg p-2 space-y-1" style={{ background: 'var(--kura-alpha-04)' }}>
                   <div className="flex justify-between">
                     <span className="text-[9px] text-white/30">#{i}</span>
                     <span className="text-[9px] tabular-nums" style={{ color: c }}>{v.toFixed(0)}%</span>
                   </div>
-                  <div className="h-[2px] rounded-full" style={{ background: 'rgba(255,255,255,0.07)' }}>
+                  <div className="h-[2px] rounded-full" style={{ background: 'var(--kura-alpha-07)' }}>
                     <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, v)}%`, background: c }} />
                   </div>
                   {cpu.freq_mhz?.[i] > 0 && (
@@ -223,7 +223,7 @@ function MemDetail({ d, hist }: { d: SystemResources; hist: HMap }) {
       </div>
       <div>
         <p className="text-[10px] text-white/30 uppercase tracking-widest mb-2">Properties</p>
-        <div className="rounded-xl px-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="rounded-xl px-3" style={{ background: 'var(--kura-alpha-04)', border: '1px solid var(--kura-alpha-06)' }}>
           <Prop label="Total" value={fmtBytes(m.total_bytes)} />
           <Prop label="Used" value={`${fmtBytes(m.used_bytes)} (${pct.toFixed(1)}%)`} />
           <Prop label="Available" value={fmtBytes(m.avail_bytes)} />
@@ -255,13 +255,13 @@ function GPUDetail({ d, hist, idx }: { d: SystemResources; hist: HMap; idx: numb
           <p className="text-[10px] text-white/30 uppercase tracking-widest mb-2">Encode / Decode</p>
           <div className="grid grid-cols-2 gap-2">
             {g.encoder_pct !== undefined && (
-              <div className="rounded-xl px-3 py-2" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div className="rounded-xl px-3 py-2" style={{ background: 'var(--kura-alpha-04)', border: '1px solid var(--kura-alpha-06)' }}>
                 <p className="text-[10px] text-white/30 mb-1">Encoder</p>
                 <p className="text-xl font-bold text-white tabular-nums">{g.encoder_pct.toFixed(0)}%</p>
               </div>
             )}
             {g.decoder_pct !== undefined && (
-              <div className="rounded-xl px-3 py-2" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div className="rounded-xl px-3 py-2" style={{ background: 'var(--kura-alpha-04)', border: '1px solid var(--kura-alpha-06)' }}>
                 <p className="text-[10px] text-white/30 mb-1">Decoder</p>
                 <p className="text-xl font-bold text-white tabular-nums">{g.decoder_pct.toFixed(0)}%</p>
               </div>
@@ -271,7 +271,7 @@ function GPUDetail({ d, hist, idx }: { d: SystemResources; hist: HMap; idx: numb
       )}
       <div>
         <p className="text-[10px] text-white/30 uppercase tracking-widest mb-2">Properties</p>
-        <div className="rounded-xl px-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="rounded-xl px-3" style={{ background: 'var(--kura-alpha-04)', border: '1px solid var(--kura-alpha-06)' }}>
           <Prop label="Driver" value={g.driver.toUpperCase()} />
           <Prop label="VRAM Used" value={`${fmtBytes(g.vram_used)} / ${fmtBytes(g.vram_total)} (${vramPct.toFixed(1)}%)`} />
           {g.temp_c !== undefined && g.temp_c > 0 && <Prop label="Temperature" value={`${g.temp_c.toFixed(1)}°C`} />}
@@ -298,7 +298,7 @@ function DiskDetail({ d, hist, name }: { d: SystemResources; hist: HMap; name: s
       </div>
       <div>
         <p className="text-[10px] text-white/30 uppercase tracking-widest mb-2">Properties</p>
-        <div className="rounded-xl px-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="rounded-xl px-3" style={{ background: 'var(--kura-alpha-04)', border: '1px solid var(--kura-alpha-06)' }}>
           {dk.mount_point && <Prop label="Mount Point" value={dk.mount_point} />}
           {dk.total_bytes !== undefined && dk.total_bytes > 0 && <Prop label="Capacity" value={fmtBytes(dk.total_bytes)} />}
           {dk.used_bytes !== undefined && <Prop label="Used" value={`${fmtBytes(dk.used_bytes)} (${usedPct.toFixed(1)}%)`} />}
@@ -333,7 +333,7 @@ function SensorsDetail({ d }: { d: SystemResources }) {
       {d.sensors.map(chip => (
         <div key={chip.path}>
           <p className="text-[10px] text-white/30 uppercase tracking-widest mb-2 font-mono">{chip.name}</p>
-          <div className="rounded-xl px-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="rounded-xl px-3" style={{ background: 'var(--kura-alpha-04)', border: '1px solid var(--kura-alpha-06)' }}>
             {chip.sensors.map((s, i) => (
               <Prop key={i} label={s.label} value={`${s.value.toFixed(s.kind === 'fan' ? 0 : 1)} ${s.unit}${s.crit ? ` / ${s.crit.toFixed(0)}${s.unit} crit` : ''}`} />
             ))}
@@ -428,7 +428,7 @@ export function HardwarePage() {
       {/* ── Sidebar ─────────────────────────────────────────────────────── */}
       <div
         className="w-[196px] shrink-0 flex flex-col gap-1 p-2 overflow-y-auto border-r"
-        style={{ borderColor: 'rgba(255,255,255,0.06)' }}
+        style={{ borderColor: 'var(--kura-alpha-06)' }}
       >
         <SidebarItem
           icon={Cpu} label="Processor"
@@ -513,7 +513,7 @@ export function HardwarePage() {
       {/* ── Detail panel ────────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-5 py-3 border-b shrink-0" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+        <div className="px-5 py-3 border-b shrink-0" style={{ borderColor: 'var(--kura-alpha-06)' }}>
           <p className="text-sm font-semibold text-white truncate">{detailTitle}</p>
           <p className="text-[11px] text-white/35">{detailSub}</p>
         </div>

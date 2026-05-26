@@ -116,14 +116,14 @@ export function FilePicker({ onOpen, onCancel, accept = [], title = 'Open File' 
   return (
     <div
       className="fixed inset-0 z-[10000] flex items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)' }}
+      style={{ background: 'var(--kura-overlay)', backdropFilter: 'blur(8px)' }}
       onClick={onCancel}
     >
       <div
         className="flex w-[720px] h-[480px] rounded-2xl overflow-hidden select-none"
         style={{
           background: 'rgba(20,22,34,0.97)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: '1px solid var(--kura-alpha-08)',
           boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
         }}
         onClick={e => e.stopPropagation()}
@@ -288,8 +288,8 @@ export function FilePicker({ onOpen, onCancel, accept = [], title = 'Open File' 
                 <div
                   className="absolute bottom-full left-0 mb-1 py-1 rounded-xl min-w-[140px]"
                   style={{
-                    background: 'rgba(18,20,30,0.96)',
-                    border: '1px solid rgba(255,255,255,0.10)',
+                    background: 'var(--kura-menu-bg)',
+                    border: '1px solid var(--kura-alpha-10)',
                     boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
                   }}
                 >

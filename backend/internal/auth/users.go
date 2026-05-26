@@ -7,6 +7,7 @@ import (
 	"os/user"
 	"time"
 
+	"github.com/kura-os/kura/backend/pkg/config"
 	"github.com/kura-os/kura/backend/pkg/ipc"
 )
 
@@ -17,11 +18,15 @@ var devUsers = map[string]string{
 
 // VerifyPassword authenticates a user via PAM (through kura-helper).
 // Returns (ok, totpRequired, error).
-func VerifyPassword(username, password string) (bool, bool, error) {
+func VerifyPassword(store *config.Store, username, password string) (bool, bool, error) {
 	// Dev accounts (admin/admin) always work regardless of helper state.
 	if os.Getenv("KURA_DEV_MODE") == "1" {
 		if pass, ok := devUsers[username]; ok && pass == password {
-			return true, false, nil
+			totpEnabled, err := hasTOTP(store, username)
+			if err != nil {
+				return false, false, err
+			}
+			return true, totpEnabled, nil
 		}
 	}
 
@@ -50,7 +55,7 @@ func VerifyPassword(username, password string) (bool, bool, error) {
 		return false, false, nil
 	}
 
-	totpEnabled, err := hasTOTP(username)
+	totpEnabled, err := hasTOTP(store, username)
 	if err != nil {
 		return false, false, err
 	}
@@ -63,8 +68,6 @@ func HashPassword(password string) (string, error) {
 	return "", fmt.Errorf("not implemented: use PAM for authentication")
 }
 
-// hasTOTP checks if TOTP is configured for the user.
-func hasTOTP(username string) (bool, error) {
-	// TODO: query config store: SELECT totp_secret FROM users WHERE username=?
-	return false, nil
+func hasTOTP(store *config.Store, username string) (bool, error) {
+	return TOTPEnabled(store, username)
 }

@@ -547,13 +547,13 @@ export function StoragePage() {
 
       {/* 5. MODAL FOR RAID CREATION */}
       {showRaidModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
+        <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
           <form onSubmit={handleCreateRaid} className="rounded-xl p-5 w-full max-w-md space-y-4"
             style={{
-              background: 'rgba(12,14,22,0.82)',
+              background: 'var(--kura-glass)',
               backdropFilter: 'blur(32px) saturate(1.5)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
+              border: '1px solid var(--kura-alpha-08)',
+              boxShadow: '0 32px 80px var(--kura-shadow), 0 0 0 0.5px var(--kura-glass-border) inset',
             }}>
             <h3 className="font-bold text-lg text-white">Configurar Nova Matriz RAID</h3>
 
@@ -626,13 +626,13 @@ export function StoragePage() {
 
       {/* 6. MODAL FOR VG CREATION */}
       {showVgModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
+        <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
           <form onSubmit={handleCreateVg} className="rounded-xl p-5 w-full max-w-sm space-y-4"
             style={{
-              background: 'rgba(12,14,22,0.82)',
+              background: 'var(--kura-glass)',
               backdropFilter: 'blur(32px) saturate(1.5)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
+              border: '1px solid var(--kura-alpha-08)',
+              boxShadow: '0 32px 80px var(--kura-shadow), 0 0 0 0.5px var(--kura-glass-border) inset',
             }}>
             <h3 className="font-bold text-lg text-white">Criar Volume Group (VG)</h3>
 
@@ -691,13 +691,13 @@ export function StoragePage() {
 
       {/* 7. MODAL FOR LV CREATION */}
       {showLvModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
+        <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
           <form onSubmit={handleCreateLv} className="rounded-xl p-5 w-full max-w-sm space-y-4"
             style={{
-              background: 'rgba(12,14,22,0.82)',
+              background: 'var(--kura-glass)',
               backdropFilter: 'blur(32px) saturate(1.5)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
+              border: '1px solid var(--kura-alpha-08)',
+              boxShadow: '0 32px 80px var(--kura-shadow), 0 0 0 0.5px var(--kura-glass-border) inset',
             }}>
             <h3 className="font-bold text-lg text-white">Criar Volume Lógico (LV)</h3>
 
@@ -757,13 +757,13 @@ export function StoragePage() {
 
       {/* 8. MODAL FOR SHARE CREATION */}
       {showShareModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
+        <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
           <form onSubmit={handleCreateShare} className="rounded-xl p-5 w-full max-w-md space-y-4"
             style={{
-              background: 'rgba(12,14,22,0.82)',
+              background: 'var(--kura-glass)',
               backdropFilter: 'blur(32px) saturate(1.5)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
+              border: '1px solid var(--kura-alpha-08)',
+              boxShadow: '0 32px 80px var(--kura-shadow), 0 0 0 0.5px var(--kura-glass-border) inset',
             }}>
             <h3 className="font-bold text-lg text-white">Criar Nova Pasta Partilhada</h3>
 

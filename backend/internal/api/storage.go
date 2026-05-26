@@ -3,13 +3,17 @@ package api
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/kura-os/kura/backend/internal/storage"
+	"github.com/kura-os/kura/backend/pkg/config"
 )
 
-type storageHandler struct{}
+const sharesKey = "storage:shares"
+
+type storageHandler struct {
+	store *config.Store
+}
 
 func (h *storageHandler) listDisks(w http.ResponseWriter, r *http.Request) {
 	disks, err := storage.ListDisks(r.Context())
@@ -136,8 +140,12 @@ func (h *storageHandler) enableCache(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *storageHandler) listShares(w http.ResponseWriter, r *http.Request) {
-	// TODO: load from config store
-	jsonOK(w, []storage.Share{})
+	var shares []storage.Share
+	_ = h.store.Get(sharesKey, &shares)
+	if shares == nil {
+		shares = []storage.Share{}
+	}
+	jsonOK(w, shares)
 }
 
 func (h *storageHandler) createShare(w http.ResponseWriter, r *http.Request) {
@@ -146,14 +154,39 @@ func (h *storageHandler) createShare(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
+	if s.Name == "" {
+		jsonError(w, "share name is required", http.StatusBadRequest)
+		return
+	}
+	if s.Path == "" {
+		jsonError(w, "share path is required", http.StatusBadRequest)
+		return
+	}
+
+	var shares []storage.Share
+	_ = h.store.Get(sharesKey, &shares)
+
+	for _, existing := range shares {
+		if existing.Name == s.Name {
+			jsonError(w, "share already exists: "+s.Name, http.StatusConflict)
+			return
+		}
+	}
+
+	shares = append(shares, s)
+	if err := h.store.Set(sharesKey, shares); err != nil {
+		jsonError(w, "failed to save shares: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	switch s.Protocol {
 	case storage.ProtocolSMB:
-		if err := storage.ApplySMBConfig(r.Context(), []storage.Share{s}); err != nil {
+		if err := storage.ApplySMBConfig(r.Context(), shares); err != nil {
 			jsonError(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	case storage.ProtocolNFS:
-		if err := storage.ApplyNFSConfig(r.Context(), []storage.Share{s}); err != nil {
+		if err := storage.ApplyNFSConfig(r.Context(), shares); err != nil {
 			jsonError(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -165,13 +198,114 @@ func (h *storageHandler) createShare(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *storageHandler) updateShare(w http.ResponseWriter, r *http.Request) {
-	// TODO: load existing shares, update named share, reapply
-	w.WriteHeader(http.StatusNotImplemented)
+	name := chi.URLParam(r, "name")
+	if name == "" {
+		jsonError(w, "share name is required", http.StatusBadRequest)
+		return
+	}
+
+	var updates struct {
+		Path        *string  `json:"path"`
+		Description *string  `json:"description"`
+		ReadOnly    *bool    `json:"read_only"`
+		ValidUsers  []string `json:"valid_users"`
+		ForceGroup  *string  `json:"force_group"`
+		WindowsACL  *bool    `json:"windows_acl"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		jsonError(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	var shares []storage.Share
+	if err := h.store.Get(sharesKey, &shares); err != nil {
+		jsonError(w, "failed to load shares: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	found := false
+	for i := range shares {
+		if shares[i].Name == name {
+			if updates.Path != nil {
+				if *updates.Path == "" {
+					jsonError(w, "path must not be empty", http.StatusBadRequest)
+					return
+				}
+				shares[i].Path = *updates.Path
+			}
+			if updates.Description != nil {
+				shares[i].Description = *updates.Description
+			}
+			if updates.ReadOnly != nil {
+				shares[i].ReadOnly = *updates.ReadOnly
+			}
+			if updates.ValidUsers != nil {
+				shares[i].ValidUsers = updates.ValidUsers
+			}
+			if updates.ForceGroup != nil {
+				shares[i].ForceGroup = *updates.ForceGroup
+			}
+			if updates.WindowsACL != nil {
+				shares[i].WindowsACL = *updates.WindowsACL
+			}
+			found = true
+			break
+		}
+	}
+	if !found {
+		jsonError(w, "share not found: "+name, http.StatusNotFound)
+		return
+	}
+
+	if err := h.store.Set(sharesKey, shares); err != nil {
+		jsonError(w, "failed to save shares: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := storage.ApplySMBConfig(r.Context(), shares); err != nil {
+		jsonError(w, "failed to apply SMB config: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	jsonOK(w, map[string]string{"status": "updated", "name": name})
 }
 
 func (h *storageHandler) deleteShare(w http.ResponseWriter, r *http.Request) {
-	_ = chi.URLParam(r, "name")
-	_ = strings.ToLower // imported for future use
-	// TODO: remove from config store and reapply
-	w.WriteHeader(http.StatusNotImplemented)
+	name := chi.URLParam(r, "name")
+	if name == "" {
+		jsonError(w, "share name is required", http.StatusBadRequest)
+		return
+	}
+
+	var shares []storage.Share
+	if err := h.store.Get(sharesKey, &shares); err != nil {
+		jsonError(w, "failed to load shares: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	found := false
+	filtered := make([]storage.Share, 0, len(shares))
+	for _, s := range shares {
+		if s.Name == name {
+			found = true
+			continue
+		}
+		filtered = append(filtered, s)
+	}
+	if !found {
+		jsonError(w, "share not found: "+name, http.StatusNotFound)
+		return
+	}
+
+	if err := h.store.Set(sharesKey, filtered); err != nil {
+		jsonError(w, "failed to save shares: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := storage.ApplySMBConfig(r.Context(), filtered); err != nil {
+		jsonError(w, "failed to apply SMB config: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

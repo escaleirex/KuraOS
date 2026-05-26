@@ -71,17 +71,17 @@ export function AppDetail({ app, onClose, onInstalled }: Props) {
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center"
-      style={{ zIndex: 20000, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(12px)' }}
+      className="absolute inset-0 flex items-center justify-center"
+      style={{ zIndex: 20000, background: 'var(--kura-overlay)', backdropFilter: 'blur(12px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
       <div
         className="w-[560px] max-h-[80vh] overflow-y-auto rounded-2xl flex flex-col"
         style={{
-          background: 'rgba(12,14,22,0.82)',
+          background: 'var(--kura-glass)',
           backdropFilter: 'blur(32px) saturate(1.5)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.7), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
+          border: '1px solid var(--kura-alpha-08)',
+          boxShadow: '0 24px 64px var(--kura-shadow), 0 0 0 0.5px var(--kura-glass-border) inset',
         }}
       >
         {/* Header */}
@@ -91,7 +91,7 @@ export function AppDetail({ app, onClose, onInstalled }: Props) {
             <h2 className="text-white font-semibold text-lg">{app.name}</h2>
             <span
               className="text-xs px-2 py-0.5 rounded-full font-medium"
-              style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' }}
+              style={{ background: 'var(--kura-alpha-08)', color: 'var(--kura-alpha-50)' }}
             >
               {app.category}
             </span>

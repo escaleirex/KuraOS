@@ -9,9 +9,9 @@ const WIDGET_TYPES: WidgetType[] = ['clock', 'metrics']
 
 const MENU_STYLE: React.CSSProperties = {
   minWidth:       '188px',
-  background:     'rgba(18,20,30,0.96)',
+  background:     'var(--kura-menu-bg)',
   backdropFilter: 'blur(24px)',
-  border:         '1px solid rgba(255,255,255,0.10)',
+  border:         '1px solid var(--kura-alpha-10)',
   boxShadow:      '0 16px 48px rgba(0,0,0,0.7)',
 }
 
@@ -106,7 +106,7 @@ export function DesktopContextMenu() {
                     zIndex:   9600,
                     minWidth: '172px',
                     ...MENU_STYLE,
-                    background: 'rgba(18,20,30,0.98)',
+                    background: 'var(--kura-menu-bg)',
                   }}
                 >
                   {WIDGET_TYPES.map(type => {

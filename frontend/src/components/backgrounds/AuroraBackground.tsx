@@ -30,7 +30,11 @@ export function AuroraBackground() {
       const H = canvas!.height
 
       ctx.clearRect(0, 0, W, H)
-      ctx.fillStyle = '#050810'
+
+      // Read theme background from CSS variable so it flips with light/dark
+      const rootBg = getComputedStyle(document.documentElement)
+        .getPropertyValue('--kura-bg').trim() || '#050810'
+      ctx.fillStyle = rootBg
       ctx.fillRect(0, 0, W, H)
 
       for (const o of orbs) {

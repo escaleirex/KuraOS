@@ -49,11 +49,11 @@ export function NotePadPage() {
   }, [])
 
   return (
-    <div className="flex flex-col h-full" style={{ background: 'rgba(10,12,20,0.95)' }}>
+    <div className="flex flex-col h-full" style={{ background: 'var(--kura-menu-bg)' }}>
       {/* toolbar */}
       <div
         className="flex items-center gap-1 px-3 py-1.5 shrink-0"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}
+        style={{ borderBottom: '1px solid var(--kura-alpha-06)', background: 'var(--kura-alpha-02)' }}
       >
         <button
           onClick={newFile}
@@ -85,7 +85,7 @@ export function NotePadPage() {
           Save
         </button>
 
-        <div className="w-px h-4 mx-1" style={{ background: 'rgba(255,255,255,0.08)' }} />
+        <div className="w-px h-4 mx-1" style={{ background: 'var(--kura-alpha-08)' }} />
 
         <div className="flex items-center gap-1.5">
           <TextT size={13} className="text-white/40" />
@@ -126,7 +126,7 @@ export function NotePadPage() {
       {/* status bar */}
       <div
         className="flex items-center gap-4 px-4 py-1 shrink-0"
-        style={{ borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.01)' }}
+        style={{ borderTop: '1px solid var(--kura-alpha-05)', background: 'var(--kura-alpha-01)' }}
       >
         <span className="text-[11px] text-white/25">Lines: {lineCount}</span>
         <span className="text-[11px] text-white/25">Words: {wordCount}</span>

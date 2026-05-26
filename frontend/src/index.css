@@ -63,7 +63,7 @@
   /* Global scrollbar styling */
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+    scrollbar-color: var(--kura-scrollbar-thumb, rgba(255, 255, 255, 0.12)) transparent;
   }
 
   ::-webkit-scrollbar {
@@ -83,11 +83,11 @@
 
   .scrolling ::-webkit-scrollbar-thumb,
   *:hover::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--kura-scrollbar-thumb, rgba(255, 255, 255, 0.12));
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.28) !important;
+    background: var(--kura-scrollbar-thumb-hover, rgba(255, 255, 255, 0.25)) !important;
   }
 
   ::-webkit-scrollbar-corner {
@@ -107,8 +107,8 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #3b82f6;
-    border: 2px solid rgba(255,255,255,0.9);
+    background: var(--kura-accent, #3b82f6);
+    border: 2px solid var(--kura-alpha-90);
     box-shadow: 0 2px 6px rgba(0,0,0,0.4);
     cursor: pointer;
     transition: transform 0.1s ease;
@@ -120,8 +120,8 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #3b82f6;
-    border: 2px solid rgba(255,255,255,0.9);
+    background: var(--kura-accent, #3b82f6);
+    border: 2px solid var(--kura-alpha-90);
     box-shadow: 0 2px 6px rgba(0,0,0,0.4);
     cursor: pointer;
   }
@@ -139,6 +139,12 @@
 }
 
 @theme inline {
+  --color-white: var(--theme-white);
+  --color-black: var(--theme-black);
+  --color-slate-800: var(--theme-slate-800);
+  --color-slate-900: var(--theme-slate-900);
+  --color-slate-950: var(--theme-slate-950);
+
   --font-heading: var(--font-sans);
   --font-sans: 'Outfit Variable', sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
@@ -179,16 +185,29 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Override sky palette to act as dynamic accent color */
+  --color-sky-300: color-mix(in srgb, var(--kura-accent) 70%, white);
+  --color-sky-400: color-mix(in srgb, var(--kura-accent) 85%, white);
+  --color-sky-500: var(--kura-accent);
+  --color-sky-600: color-mix(in srgb, var(--kura-accent) 85%, black);
+  --color-sky-700: color-mix(in srgb, var(--kura-accent) 70%, black);
 }
 
 :root {
+  --theme-white: #ffffff;
+  --theme-black: #000000;
+  --theme-slate-800: #1e293b;
+  --theme-slate-900: #0f172a;
+  --theme-slate-950: #020617;
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.457 0.24 277.023);
+  --primary: var(--kura-accent);
   --primary-foreground: oklch(0.962 0.018 272.314);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
@@ -199,7 +218,7 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
+  --ring: var(--kura-accent);
   --chart-1: oklch(0.785 0.115 274.713);
   --chart-2: oklch(0.585 0.233 277.117);
   --chart-3: oklch(0.511 0.262 276.966);
@@ -223,7 +242,7 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.21 0.006 285.885);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.398 0.195 277.366);
+  --primary: var(--kura-accent);
   --primary-foreground: oklch(0.962 0.018 272.314);
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
@@ -234,7 +253,7 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.552 0.016 285.938);
+  --ring: var(--kura-accent);
   --chart-1: oklch(0.785 0.115 274.713);
   --chart-2: oklch(0.585 0.233 277.117);
   --chart-3: oklch(0.511 0.262 276.966);
@@ -247,5 +266,183 @@
   --sidebar-accent: oklch(0.274 0.006 286.033);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.552 0.016 285.938);
+  --sidebar-ring: oklch(0.552 0.015 285.938);
+}
+
+/* ── KuraOS appearance system ─────────────────────────────────────────────── */
+
+:root {
+  --kura-accent: #3b82f6;
+  --kura-scale: 1;
+}
+
+/* Light theme — full inversion of the dark desktop */
+.theme-light {
+  --theme-white: #1a1a2e;
+  --theme-black: #f9fafb;
+  --theme-slate-800: #e2e8f0;
+  --theme-slate-900: #f1f5f9;
+  --theme-slate-950: #f8fafc;
+
+  --kura-bg: #f0f2f5;
+  --kura-surface: #ffffff;
+  --kura-surface-alt: #f8f9fa;
+  --kura-text: #1a1a2e;
+  --kura-text-secondary: #555770;
+  --kura-border: rgba(0, 0, 0, 0.08);
+  --kura-border-hover: rgba(0, 0, 0, 0.14);
+  --kura-card-bg: rgba(255, 255, 255, 0.75);
+  --kura-card-border: rgba(0, 0, 0, 0.06);
+  --kura-input-bg: rgba(0, 0, 0, 0.04);
+  --kura-input-border: rgba(0, 0, 0, 0.1);
+  --kura-hover: rgba(0, 0, 0, 0.04);
+  --kura-active: rgba(0, 0, 0, 0.06);
+  --kura-overlay: rgba(0, 0, 0, 0.3);
+  --kura-glass: rgba(255, 255, 255, 0.65);
+  --kura-glass-border: rgba(255, 255, 255, 0.5);
+  --kura-shadow: rgba(0, 0, 0, 0.08);
+  --kura-menu-bg: rgba(255, 255, 255, 0.88);
+  --kura-scrollbar-thumb: rgba(0, 0, 0, 0.15);
+  --kura-scrollbar-thumb-hover: rgba(0, 0, 0, 0.28);
+  --kura-alpha-01: rgba(0, 0, 0, 0.01);
+  --kura-alpha-02: rgba(0, 0, 0, 0.02);
+  --kura-alpha-03: rgba(0, 0, 0, 0.03);
+  --kura-alpha-04: rgba(0, 0, 0, 0.04);
+  --kura-alpha-05: rgba(0, 0, 0, 0.05);
+  --kura-alpha-06: rgba(0, 0, 0, 0.06);
+  --kura-alpha-07: rgba(0, 0, 0, 0.07);
+  --kura-alpha-08: rgba(0, 0, 0, 0.08);
+  --kura-alpha-09: rgba(0, 0, 0, 0.09);
+  --kura-alpha-10: rgba(0, 0, 0, 0.10);
+  --kura-alpha-12: rgba(0, 0, 0, 0.12);
+  --kura-alpha-13: rgba(0, 0, 0, 0.13);
+  --kura-alpha-15: rgba(0, 0, 0, 0.15);
+  --kura-alpha-20: rgba(0, 0, 0, 0.20);
+  --kura-alpha-25: rgba(0, 0, 0, 0.25);
+  --kura-alpha-30: rgba(0, 0, 0, 0.30);
+  --kura-alpha-35: rgba(0, 0, 0, 0.35);
+  --kura-alpha-40: rgba(0, 0, 0, 0.40);
+  --kura-alpha-45: rgba(0, 0, 0, 0.45);
+  --kura-alpha-50: rgba(0, 0, 0, 0.50);
+  --kura-alpha-55: rgba(0, 0, 0, 0.55);
+  --kura-alpha-60: rgba(0, 0, 0, 0.60);
+  --kura-alpha-65: rgba(0, 0, 0, 0.65);
+  --kura-alpha-70: rgba(0, 0, 0, 0.70);
+  --kura-alpha-75: rgba(0, 0, 0, 0.75);
+  --kura-alpha-80: rgba(0, 0, 0, 0.80);
+  --kura-alpha-85: rgba(0, 0, 0, 0.85);
+  --kura-alpha-90: rgba(0, 0, 0, 0.90);
+}
+
+.theme-light .bg-white\/5 { background-color: rgba(0, 0, 0, 0.04) !important; }
+.theme-light .bg-white\/10 { background-color: rgba(0, 0, 0, 0.08) !important; }
+.theme-light .border-white\/10 { border-color: rgba(0, 0, 0, 0.1) !important; }
+.theme-light .border-white\/5 { border-color: rgba(0, 0, 0, 0.05) !important; }
+.theme-light .border-white\/\[0\.05\] { border-color: rgba(0, 0, 0, 0.05) !important; }
+
+
+.theme-dark {
+  --kura-bg: #050810;
+  --kura-surface: rgba(255, 255, 255, 0.04);
+  --kura-surface-alt: rgba(255, 255, 255, 0.06);
+  --kura-text: #ffffff;
+  --kura-text-secondary: rgba(255, 255, 255, 0.45);
+  --kura-border: rgba(255, 255, 255, 0.06);
+  --kura-border-hover: rgba(255, 255, 255, 0.12);
+  --kura-card-bg: rgba(255, 255, 255, 0.04);
+  --kura-card-border: rgba(255, 255, 255, 0.06);
+  --kura-input-bg: rgba(255, 255, 255, 0.05);
+  --kura-input-border: rgba(255, 255, 255, 0.1);
+  --kura-hover: rgba(255, 255, 255, 0.04);
+  --kura-active: rgba(255, 255, 255, 0.08);
+  --kura-overlay: rgba(0, 0, 0, 0.5);
+  --kura-glass: rgba(12, 14, 22, 0.7);
+  --kura-glass-border: rgba(255, 255, 255, 0.08);
+  --kura-shadow: rgba(0, 0, 0, 0.4);
+  --kura-menu-bg: rgba(18, 20, 30, 0.96);
+  --kura-scrollbar-thumb: rgba(255, 255, 255, 0.12);
+  --kura-scrollbar-thumb-hover: rgba(255, 255, 255, 0.25);
+  --kura-alpha-01: rgba(255, 255, 255, 0.01);
+  --kura-alpha-02: rgba(255, 255, 255, 0.02);
+  --kura-alpha-03: rgba(255, 255, 255, 0.03);
+  --kura-alpha-04: rgba(255, 255, 255, 0.04);
+  --kura-alpha-05: rgba(255, 255, 255, 0.05);
+  --kura-alpha-06: rgba(255, 255, 255, 0.06);
+  --kura-alpha-07: rgba(255, 255, 255, 0.07);
+  --kura-alpha-08: rgba(255, 255, 255, 0.08);
+  --kura-alpha-09: rgba(255, 255, 255, 0.09);
+  --kura-alpha-10: rgba(255, 255, 255, 0.10);
+  --kura-alpha-12: rgba(255, 255, 255, 0.12);
+  --kura-alpha-13: rgba(255, 255, 255, 0.13);
+  --kura-alpha-15: rgba(255, 255, 255, 0.15);
+  --kura-alpha-20: rgba(255, 255, 255, 0.20);
+  --kura-alpha-25: rgba(255, 255, 255, 0.25);
+  --kura-alpha-30: rgba(255, 255, 255, 0.30);
+  --kura-alpha-35: rgba(255, 255, 255, 0.35);
+  --kura-alpha-40: rgba(255, 255, 255, 0.40);
+  --kura-alpha-45: rgba(255, 255, 255, 0.45);
+  --kura-alpha-50: rgba(255, 255, 255, 0.50);
+  --kura-alpha-55: rgba(255, 255, 255, 0.55);
+  --kura-alpha-60: rgba(255, 255, 255, 0.60);
+  --kura-alpha-65: rgba(255, 255, 255, 0.65);
+  --kura-alpha-70: rgba(255, 255, 255, 0.70);
+  --kura-alpha-75: rgba(255, 255, 255, 0.75);
+  --kura-alpha-80: rgba(255, 255, 255, 0.80);
+  --kura-alpha-85: rgba(255, 255, 255, 0.85);
+  --kura-alpha-90: rgba(255, 255, 255, 0.90);
+}
+
+/* Scale — applied as zoom on the root element */
+:root {
+  zoom: var(--kura-scale, 1);
+}
+
+/* Density — compact reduces padding/spacing */
+[data-kura-density="compact"] .kura-density-pad {
+  padding-top: 0.35rem !important;
+  padding-bottom: 0.35rem !important;
+}
+
+[data-kura-density="compact"] .kura-density-gap {
+  gap: 0.35rem !important;
+}
+
+[data-kura-density="comfortable"] .kura-density-pad {
+  padding-top: 0.65rem !important;
+  padding-bottom: 0.65rem !important;
+}
+
+[data-kura-density="comfortable"] .kura-density-gap {
+  gap: 0.65rem !important;
+}/* ── KuraOS Light Mode Overrides ─────────────────────────────────────────── */
+
+/* Force ALL text-white utilities to use the theme text color in light mode.
+   This catches every opacity variant (text-white/80, text-white/60, etc.) */
+.theme-light :where(.text-white, [class*="text-white/"]) {
+  color: var(--kura-text) !important;
+}
+
+/* Exception: buttons and badges with solid colored backgrounds keep white text */
+.theme-light :where(
+  .bg-sky-500, .bg-sky-600, .bg-sky-700,
+  .bg-amber-500, .bg-amber-600, .bg-amber-700,
+  .bg-emerald-500, .bg-emerald-600, .bg-emerald-700,
+  .bg-purple-500, .bg-purple-600, .bg-purple-700,
+  .bg-red-500, .bg-red-600, .bg-red-700,
+  .bg-cyan-500, .bg-cyan-600, .bg-cyan-700,
+  .bg-orange-500, .bg-orange-600, .bg-orange-700,
+  .bg-indigo-500, .bg-indigo-600, .bg-indigo-700,
+  .bg-rose-500, .bg-rose-600, .bg-rose-700,
+  .bg-teal-500, .bg-teal-600, .bg-teal-700,
+  .bg-lime-500, .bg-lime-600, .bg-lime-700
+) :where(.text-white, [class*="text-white/"]) {
+  color: #ffffff !important;
+}
+
+/* Desktop icon label text-shadow */
+.kura-text-shadow {
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+.theme-light .kura-text-shadow {
+  text-shadow: none;
 }

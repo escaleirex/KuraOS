@@ -72,14 +72,14 @@ function Bar({
           <span className="text-[10px] text-white/65 tabular-nums font-medium">{Math.round(value)}%</span>
         </div>
       </div>
-      <div className="h-[3px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
+      <div className="h-[3px] rounded-full overflow-hidden" style={{ background: 'var(--kura-alpha-07)' }}>
         <div
           className="h-full rounded-full transition-all duration-700"
           style={{ width: `${Math.min(100, value)}%`, background: color, boxShadow: `0 0 5px ${color}77` }}
         />
       </div>
       {hkey && chartH && chartH > 0 && (
-        <div className="mt-0.5" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 6 }}>
+        <div className="mt-0.5" style={{ background: 'var(--kura-alpha-03)', borderRadius: 6 }}>
           <MiniChart hkey={hkey} color={color} h={chartH} max={max} />
         </div>
       )}
@@ -144,9 +144,9 @@ export function MetricsContent({ pixelH, settings, maxHistory }: { pixelH: numbe
     <div
       className="w-full h-full rounded-2xl px-3.5 py-3 flex flex-col gap-2 select-none overflow-hidden"
       style={{
-        background:     'rgba(12,14,22,0.82)',
+        background:     'var(--kura-glass)',
         backdropFilter: 'blur(20px) saturate(1.4)',
-        border:         '1px solid rgba(255,255,255,0.07)',
+        border:         '1px solid var(--kura-alpha-07)',
         boxShadow:      '0 8px 32px rgba(0,0,0,0.45)',
       }}
     >

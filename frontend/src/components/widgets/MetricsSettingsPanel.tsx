@@ -87,13 +87,13 @@ function GridResizer({
                 className="rounded-sm cursor-pointer transition-colors duration-75"
                 style={{
                   background: active
-                    ? 'rgba(99,102,241,0.6)'
+                    ? 'color-mix(in srgb, var(--kura-accent) 60%, transparent)'
                     : hover
-                    ? 'rgba(99,102,241,0.2)'
-                    : 'rgba(255,255,255,0.06)',
+                    ? 'color-mix(in srgb, var(--kura-accent) 20%, transparent)'
+                    : 'var(--kura-alpha-06)',
                   border: active
-                    ? '1px solid rgba(99,102,241,0.8)'
-                    : '1px solid rgba(255,255,255,0.04)',
+                    ? '1px solid color-mix(in srgb, var(--kura-accent) 80%, transparent)'
+                    : '1px solid var(--kura-alpha-04)',
                 }}
               />
             )
@@ -113,7 +113,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
       type="button"
       onClick={() => onChange(!checked)}
       className="relative w-8 h-4 rounded-full transition-colors cursor-pointer"
-      style={{ background: checked ? 'rgba(99,102,241,0.7)' : 'rgba(255,255,255,0.1)' }}
+      style={{ background: checked ? 'color-mix(in srgb, var(--kura-accent) 70%, transparent)' : 'var(--kura-alpha-10)' }}
     >
       <motion.div
         className="absolute top-0.5 w-3 h-3 rounded-full bg-white"
@@ -135,7 +135,7 @@ function SettingsColumn({
   onResize: (c: number, r: number) => void
 }) {
   return (
-    <div className="w-[360px] shrink-0 overflow-y-auto p-5 flex flex-col gap-5" style={{ borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+    <div className="w-[360px] shrink-0 overflow-y-auto p-5 flex flex-col gap-5" style={{ borderRight: '1px solid var(--kura-alpha-06)' }}>
       {/* Grid Resizer */}
       <section>
         <h3 className="text-[10px] uppercase tracking-widest text-white/30 mb-3">Size</h3>
@@ -194,12 +194,12 @@ function SettingsColumn({
               className="py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
               style={{
                 background: settings.refreshInterval === opt.value
-                  ? 'rgba(99,102,241,0.25)'
-                  : 'rgba(255,255,255,0.04)',
-                color: settings.refreshInterval === opt.value ? '#818cf8' : 'rgba(255,255,255,0.5)',
+                  ? 'color-mix(in srgb, var(--kura-accent) 25%, transparent)'
+                  : 'var(--kura-alpha-04)',
+                color: settings.refreshInterval === opt.value ? '#818cf8' : 'var(--kura-alpha-50)',
                 border: settings.refreshInterval === opt.value
-                  ? '1px solid rgba(99,102,241,0.4)'
-                  : '1px solid rgba(255,255,255,0.06)',
+                  ? '1px solid color-mix(in srgb, var(--kura-accent) 40%, transparent)'
+                  : '1px solid var(--kura-alpha-06)',
               }}
             >
               {opt.label}
@@ -224,12 +224,12 @@ function SettingsColumn({
               className="py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
               style={{
                 background: settings.chartHistory === opt.value
-                  ? 'rgba(99,102,241,0.25)'
-                  : 'rgba(255,255,255,0.04)',
-                color: settings.chartHistory === opt.value ? '#818cf8' : 'rgba(255,255,255,0.5)',
+                  ? 'color-mix(in srgb, var(--kura-accent) 25%, transparent)'
+                  : 'var(--kura-alpha-04)',
+                color: settings.chartHistory === opt.value ? '#818cf8' : 'var(--kura-alpha-50)',
                 border: settings.chartHistory === opt.value
-                  ? '1px solid rgba(99,102,241,0.4)'
-                  : '1px solid rgba(255,255,255,0.06)',
+                  ? '1px solid color-mix(in srgb, var(--kura-accent) 40%, transparent)'
+                  : '1px solid var(--kura-alpha-06)',
               }}
             >
               {opt.label}
@@ -253,12 +253,12 @@ function SettingsColumn({
               className="py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
               style={{
                 background: settings.temperatureUnit === opt.value
-                  ? 'rgba(99,102,241,0.25)'
-                  : 'rgba(255,255,255,0.04)',
-                color: settings.temperatureUnit === opt.value ? '#818cf8' : 'rgba(255,255,255,0.5)',
+                  ? 'color-mix(in srgb, var(--kura-accent) 25%, transparent)'
+                  : 'var(--kura-alpha-04)',
+                color: settings.temperatureUnit === opt.value ? '#818cf8' : 'var(--kura-alpha-50)',
                 border: settings.temperatureUnit === opt.value
-                  ? '1px solid rgba(99,102,241,0.4)'
-                  : '1px solid rgba(255,255,255,0.06)',
+                  ? '1px solid color-mix(in srgb, var(--kura-accent) 40%, transparent)'
+                  : '1px solid var(--kura-alpha-06)',
               }}
             >
               {opt.label}
@@ -279,10 +279,10 @@ function SettingsColumn({
               className="flex items-center gap-2 py-1.5 px-2 rounded-lg text-xs transition-colors cursor-pointer"
               style={{
                 background: settings.accentColor === color.value
-                  ? 'rgba(255,255,255,0.08)'
+                  ? 'var(--kura-alpha-08)'
                   : 'transparent',
                 border: settings.accentColor === color.value
-                  ? '1px solid rgba(255,255,255,0.15)'
+                  ? '1px solid var(--kura-alpha-15)'
                   : '1px solid transparent',
               }}
             >
@@ -343,7 +343,7 @@ export function MetricsSettingsPanel({ id, onClose }: Props) {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.1 }}
         className="fixed inset-0 z-[10000] flex items-center justify-center"
-        style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(12px)', pointerEvents: 'auto' }}
+        style={{ background: 'var(--kura-overlay)', backdropFilter: 'blur(12px)', pointerEvents: 'auto' }}
         onClick={onClose}
       >
         <motion.div
@@ -355,10 +355,10 @@ export function MetricsSettingsPanel({ id, onClose }: Props) {
           style={{
             width: '900px',
             height: '580px',
-            background: 'rgba(12,14,22,0.82)',
+            background: 'var(--kura-glass)',
             backdropFilter: 'blur(32px) saturate(1.5)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 24px 64px rgba(0,0,0,0.7), 0 0 0 0.5px rgba(255,255,255,0.04) inset',
+            border: '1px solid var(--kura-alpha-08)',
+            boxShadow: '0 24px 64px var(--kura-shadow), 0 0 0 0.5px var(--kura-glass-border) inset',
             pointerEvents: 'auto',
           }}
           onClick={e => e.stopPropagation()}
@@ -388,7 +388,7 @@ export function MetricsSettingsPanel({ id, onClose }: Props) {
             </div>
 
             {/* Preview area */}
-            <div className="flex-1 flex items-center justify-center p-8" style={{ background: 'rgba(0,0,0,0.2)' }}>
+            <div className="flex-1 flex items-center justify-center p-8" style={{ background: 'var(--kura-shadow)' }}>
               <div className="w-[380px] h-[320px]">
                 <MetricsContent pixelH={320} settings={settings} maxHistory={60} />
               </div>

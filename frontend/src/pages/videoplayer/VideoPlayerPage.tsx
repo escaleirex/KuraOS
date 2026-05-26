@@ -149,8 +149,8 @@ export function VideoPlayerPage() {
       onClick={e => e.stopPropagation()}
       onMouseMove={showControls}
       style={{
-        background: isFullscreen ? 'linear-gradient(transparent, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0.95))' : 'rgba(10,10,20,0.97)',
-        borderTop: isFullscreen ? 'none' : '1px solid rgba(255,255,255,0.06)',
+        background: isFullscreen ? 'linear-gradient(transparent, rgba(0,0,0,0.95) 40%, rgba(0,0,0,0.95))' : 'var(--kura-menu-bg)',
+        borderTop: isFullscreen ? 'none' : '1px solid var(--kura-alpha-06)',
         transition: 'opacity 0.2s',
         opacity: controlsVisible || !isFullscreen ? 1 : 0,
         pointerEvents: controlsVisible || !isFullscreen ? 'auto' : 'none',
@@ -168,7 +168,7 @@ export function VideoPlayerPage() {
           className="flex-1 h-[6px] rounded-full cursor-pointer"
           style={{
             accentColor: '#a855f7',
-            background: 'linear-gradient(to right, #a855f7 0%, #a855f7 ' + (progress * 100) + '%, rgba(255,255,255,0.1) ' + (progress * 100) + '%, rgba(255,255,255,0.1) 100%)',
+            background: 'linear-gradient(to right, #a855f7 0%, #a855f7 ' + (progress * 100) + '%, var(--kura-alpha-10) ' + (progress * 100) + '%, var(--kura-alpha-10) 100%)',
           }}
         />
         <span className="text-[11px] text-white/50 w-8 shrink-0 text-right font-mono">{formatTime(duration)}</span>
@@ -201,7 +201,7 @@ export function VideoPlayerPage() {
           className="w-20 h-[6px] rounded-full cursor-pointer"
           style={{
             accentColor: '#a855f7',
-            background: 'linear-gradient(to right, #a855f7 0%, #a855f7 ' + ((muted ? 0 : volume) * 100) + '%, rgba(255,255,255,0.1) ' + ((muted ? 0 : volume) * 100) + '%, rgba(255,255,255,0.1) 100%)',
+            background: 'linear-gradient(to right, #a855f7 0%, #a855f7 ' + ((muted ? 0 : volume) * 100) + '%, var(--kura-alpha-10) ' + ((muted ? 0 : volume) * 100) + '%, var(--kura-alpha-10) 100%)',
           }}
         />
 
@@ -223,7 +223,7 @@ export function VideoPlayerPage() {
       {!isFullscreen && (
         <div
           className="flex items-center gap-1 px-3 py-1.5 shrink-0"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(10,10,20,0.97)' }}
+          style={{ borderBottom: '1px solid var(--kura-alpha-06)', background: 'var(--kura-menu-bg)' }}
         >
           <button
             onClick={() => setPickerOpen(true)}

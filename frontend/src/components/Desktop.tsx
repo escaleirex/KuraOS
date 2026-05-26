@@ -9,6 +9,7 @@ import { MetricsWidget }       from '@/components/widgets/MetricsWidget'
 import { MetricsSettingsPanel } from '@/components/widgets/MetricsSettingsPanel'
 import { useWindowStore, type AppID, type WindowState } from '@/stores/windowStore'
 import { useWidgetStore }      from '@/stores/widgetStore'
+import { useAppearance }       from '@/contexts/AppearanceContext'
 import { lazy, Suspense, createContext } from 'react'
 
 export const WindowParamsContext = createContext<Record<string, string> | undefined>(undefined)
@@ -49,9 +50,10 @@ export function Desktop() {
   const widgets = useWidgetStore(s => s.widgets)
   const settingsOpenId = useWidgetStore(s => s.settingsOpenId)
   const closeSettings = useWidgetStore(s => s.closeSettings)
+  const { isLight } = useAppearance()
 
   return (
-    <div className="fixed inset-0 overflow-hidden select-none" style={{ background: '#050810' }}>
+    <div className="kura-root fixed inset-0 overflow-hidden select-none" style={{ background: 'var(--kura-bg, #050810)' }}>
       {/* z:0 — animated background */}
       <AuroraBackground />
 

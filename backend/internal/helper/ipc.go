@@ -88,18 +88,92 @@ func dispatch(op ipc.Op) ipc.Reply {
 		return ops.TailscaleUp(op.Params)
 	case "network.tailscale_down":
 		return ops.TailscaleDown(op.Params)
+	case "network.wifi_set_enabled":
+		return ops.WifiSetEnabled(op.Params)
+	case "network.wifi_scan":
+		return ops.WifiScan(op.Params)
+	case "network.wifi_connect":
+		return ops.WifiConnect(op.Params)
+	case "network.eth_get_config":
+		return ops.EthGetConfig(op.Params)
+	case "network.eth_set_config":
+		return ops.EthSetConfig(op.Params)
 
 	// System
+	case "system.service_start":
+		return ops.ServiceStart(op.Params)
+	case "system.service_stop":
+		return ops.ServiceStop(op.Params)
 	case "system.service_restart":
 		return ops.ServiceRestart(op.Params)
 	case "system.service_status":
 		return ops.ServiceStatus(op.Params)
+	case "system.service_enable":
+		return ops.ServiceEnable(op.Params)
+	case "system.service_disable":
+		return ops.ServiceDisable(op.Params)
+	case "system.service_enabled":
+		return ops.ServiceEnabled(op.Params)
 	case "system.modprobe":
 		return ops.Modprobe(op.Params)
+	case "system.set_locale":
+		return ops.SetLocale(op.Params)
+	case "system.set_cpu_governor":
+		return ops.SetCPUGovernor(op.Params)
+	case "system.set_disk_spindown":
+		return ops.SetDiskSpindown(op.Params)
+	case "system.set_wol":
+		return ops.SetWoL(op.Params)
+	case "system.set_timezone":
+		return ops.SetTimezone(op.Params)
+	case "system.set_ntp":
+		return ops.SetNTP(op.Params)
+	case "system.set_time_manual":
+		return ops.SetTimeManual(op.Params)
+	case "system.list_timezones":
+		return ops.ListTimezones(op.Params)
+
+	// SSH
+	case "ssh.apply_config":
+		return ops.ApplySSHConfig(op.Params)
+	case "ssh.add_key":
+		return ops.AddAuthorizedKey(op.Params)
+	case "ssh.remove_key":
+		return ops.RemoveAuthorizedKey(op.Params)
 
 	// Auth
 	case "auth.pam_verify":
 		return ops.PAMVerify(op.Params)
+
+	// Users
+	case "users.list":
+		return ops.UserList(op.Params)
+	case "users.create":
+		return ops.UserCreate(op.Params)
+	case "users.delete":
+		return ops.UserDelete(op.Params)
+	case "users.set_password":
+		return ops.UserSetPassword(op.Params)
+	case "users.set_role":
+		return ops.UserSetRole(op.Params)
+	case "users.set_samba":
+		return ops.UserSetSamba(op.Params)
+
+	// Remote Desktop
+	case "remotedesktop.setup_rdp":
+		return ops.SetupRDP(op.Params)
+	case "remotedesktop.setup_vnc":
+		return ops.SetupVNC(op.Params)
+	case "remotedesktop.install_desktop":
+		return ops.InstallDesktop(op.Params)
+	case "remotedesktop.status":
+		return ops.RemoteDesktopStatus(op.Params)
+
+	// Updates
+	case "updates.check":
+		return ops.CheckUpdates(op.Params)
+	case "updates.install":
+		return ops.InstallUpdates(op.Params)
 
 	default:
 		return ipc.Reply{OK: false, Error: fmt.Sprintf("unknown action: %q", op.Action)}
