@@ -19,7 +19,7 @@ func NewRouter(store *config.Store) http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:8080"},
+		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:8080", "http://192.168.1.205:5173"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: true,
@@ -96,11 +96,67 @@ func NewRouter(store *config.Store) http.Handler {
 		r.Post("/api/code-server/setup", aph.codeServerSetup)
 		r.Get("/api/code-server/status", aph.codeServerStatus)
 
+		// Network
+		nh := &networkHandler{}
+		r.Get("/api/network/interfaces", nh.getInterfaces)
+		r.Put("/api/network/wifi", nh.setWifi)
+		r.Post("/api/network/wifi/scan", nh.scanWifi)
+		r.Post("/api/network/wifi/connect", nh.connectWifi)
+		r.Get("/api/network/eth/{iface}", nh.getEthConfig)
+		r.Put("/api/network/eth/{iface}", nh.setEthConfig)
+
+		// Services
+		svh := &servicesHandler{}
+		r.Get("/api/services", svh.listServices)
+		r.Post("/api/services/{id}/start", svh.serviceAction)
+		r.Post("/api/services/{id}/stop", svh.serviceAction)
+		r.Post("/api/services/{id}/restart", svh.serviceAction)
+		r.Post("/api/services/{id}/enable", svh.serviceAction)
+		r.Post("/api/services/{id}/disable", svh.serviceAction)
+
+		// Users
+		uh := &usersHandler{}
+		r.Get("/api/users", uh.listUsers)
+		r.Post("/api/users", uh.createUser)
+		r.Delete("/api/users/{username}", uh.deleteUser)
+		r.Put("/api/users/{username}/password", uh.setPassword)
+		r.Put("/api/users/{username}/role", uh.setRole)
+		r.Put("/api/users/{username}/samba", uh.setSamba)
+
 		// Settings
 		r.Get("/api/settings/dock", seh.getDock)
 		r.Put("/api/settings/dock", seh.saveDock)
 		r.Get("/api/settings/nav-order", seh.getNavOrder)
 		r.Put("/api/settings/nav-order", seh.saveNavOrder)
+		r.Get("/api/settings/search", seh.getSearch)
+		r.Put("/api/settings/search", seh.saveSearch)
+		r.Get("/api/settings/datetime", seh.getDatetime)
+		r.Put("/api/settings/datetime", seh.saveDatetime)
+		r.Get("/api/settings/datetime/timezones", seh.listTimezones)
+		r.Get("/api/settings/datetime/now", seh.getCurrentTime)
+		r.Get("/api/settings/notifications", seh.getNotifications)
+		r.Put("/api/settings/notifications", seh.saveNotifications)
+		r.Get("/api/settings/appearance", seh.getAppearance)
+		r.Put("/api/settings/appearance", seh.saveAppearance)
+		r.Get("/api/settings/axis", seh.getAxis)
+		r.Put("/api/settings/axis", seh.saveAxis)
+		r.Get("/api/settings/axis/models", seh.listAxisModels)
+		r.Get("/api/settings/power", seh.getPower)
+		r.Put("/api/settings/power", seh.savePower)
+		r.Get("/api/settings/locale", seh.getLocale)
+		r.Put("/api/settings/locale", seh.saveLocale)
+		r.Get("/api/settings/ssh", seh.getSSH)
+		r.Put("/api/settings/ssh", seh.saveSSH)
+		r.Get("/api/settings/ssh/keys", seh.listSSHKeys)
+		r.Post("/api/settings/ssh/keys", seh.addSSHKey)
+		r.Delete("/api/settings/ssh/keys/{id}", seh.removeSSHKey)
+		r.Get("/api/settings/remote-desktop", seh.getRemoteDesktop)
+		r.Put("/api/settings/remote-desktop", seh.saveRemoteDesktop)
+		r.Get("/api/settings/remote-desktop/status", seh.getRemoteDesktopStatus)
+		r.Get("/api/settings/accounts", seh.getAccounts)
+		r.Put("/api/settings/accounts/{provider}", seh.saveAccount)
+		r.Post("/api/settings/accounts/{provider}/connect", seh.connectAccount)
+		r.Post("/api/settings/accounts/{provider}/disconnect", seh.disconnectAccount)
 	})
 
 	// Serve SvelteKit frontend (production)

@@ -14,9 +14,11 @@ export default defineConfig({
     },
   },
   server: {
+    host: '0.0.0.0',
+    port: 5173,
     proxy: {
-      '/api': 'http://localhost:9080',
-      '/ws':  { target: 'ws://localhost:9080', ws: true },
+      '/api': 'http://192.168.1.205:9080',
+      '/ws':  { target: 'ws://192.168.1.205:9080', ws: true },
     },
   },
 })
